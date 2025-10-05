@@ -1,1 +1,0 @@
-# cs-ai-2025-team-neural-trivium
