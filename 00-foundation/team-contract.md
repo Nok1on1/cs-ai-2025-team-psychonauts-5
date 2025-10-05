@@ -2,8 +2,8 @@
 
 | Name                       | Email                          | Primary Strengths          |
 |----------------------------|--------------------------------|---------------------------|
-| Giorgi Mikaberidze         | <Mikaberidze.Giorgi@kiu.edu.ge> | Builder/Coder, Intermediate, API Neutral |
-| Nikoloz Kvirikashvili      | <Kvirikashvili.Nikolo@kiu.edu.ge> | Builder/Coder, Advanced, API Very Comfortable |
-| Sergi Arabidze             | <bossdavidson2005@gmail.com>     | Strategist/Planner, Advanced, API Neutral |
-| Luka Mekoshvili            | <Mekoshvili.Luka@kiu.edu.ge>    | Generalist, Intermediate, API Neutral |
-| Lasha Giorgi Tskhadadze    | <Tskhadadze.LashaGio@kiu.edu.ge> | Generalist, Beginner, API Neutral |
+| Giorgi Mikaberidze         | <Mikaberidze.Giorgi@kiu.edu.ge> | Builder/Coder; API: Neutral; Experience: Intermediate |
+| Nikoloz Kvirikashvili      | <Kvirikashvili.Nikolo@kiu.edu.ge> | Builder/Coder; API: Very Comfortable; Experience: Advanced |
+| Sergi Arabidze             | <bossdavidson2005@gmail.com>     | Strategist/Planner; API: Neutral; Experience: Advanced |
+| Luka Mekoshvili            | <Mekoshvili.Luka@kiu.edu.ge>    | Generalist; API: Neutral; Experience: Intermediate |
+| Lasha Giorgi Tskhadadze    | <Tskhadadze.LashaGio@kiu.edu.ge> | Generalist; API: Neutral; Experience: Beginner |
