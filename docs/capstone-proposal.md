@@ -1,10 +1,16 @@
-Capstone Proposal
-Course: Building AI‑Powered Applications
-Team Name: Dialogos
-Project Title: Dialogos — AI‑Driven Entrance Exam Tutor
-Date: October 2025
-1. Problem Statement
-The Problem
+# Capstone Proposal
+
+**Course**: Building AI‑Powered Applications
+
+**Team Name**: Dialogos
+
+**Project Title**: Dialogos — AI‑Driven Entrance Exam Tutor
+
+**Date**: October 2025
+
+## Problem Statement
+
+### The Problem
 
 Many students preparing for university entrance exams struggle with static, one‑size‑fits‑all resources that don’t adapt to their evolving weaknesses. Currently, they often use generic preparatory books, shared question banks, or online platforms that do not tailor difficulty or feedback based on individual performance. This leads to inefficient study time, frustration when questions are too easy or too hard, and minimal insight into the reasoning behind answers.
 
@@ -12,9 +18,7 @@ This problem is experienced by high school students across many regions, particu
 
 This issue matters because poor preparation for entrance exams can negatively affect students’ academic futures and cause stress, time lost, and wasted resources. If students cannot diagnose their weak areas or methodically improve, they may underperform despite putting in effort. An AI‑powered solution is suitable here because it can dynamically generate new problems of appropriate difficulty, adapt in real time to a learner’s progress, and provide Socratic-style reflective prompts to deepen understanding. AI can tailor question generation, adapt difficulty curves, and produce introspective feedback without requiring manual content creation at scale.
 
-Scope
-
-What’s In Scope:
+### Scope
 
 Adaptive mock exam generation (questions tailored to student performance)
 
@@ -22,7 +26,7 @@ Socratic / reasoning feedback prompts to encourage reflection
 
 Performance tracking dashboard (metrics, error areas)
 
-What’s Out of Scope (for now):
+#### What’s Out of Scope (for now):
 
 Live tutoring or chat interface
 
@@ -33,12 +37,13 @@ Multilingual support beyond one principal language
 Why This Scope Makes Sense:
 Focusing on core flows (adaptive test + feedback + tracking) gives a solid, testable MVP within a semester. The out-of-scope features are nice extensions but would risk overreach.
 
-2. Target Users
-Primary User Persona
+## Target Users
+
+### Primary User Persona
 
 User Type: High school students preparing for university entrance exams
 
-Demographics:
+#### Demographics
 
 Age range: 17–19 (or gap-year students)
 
@@ -46,7 +51,7 @@ Technical proficiency: Comfortable using web apps and basic digital tools, but n
 
 Context of use: Desktop or mobile browser from home or school
 
-User Needs:
+#### User Needs
 
 Need #1: Practice tests matched to their current level
  Why it matters: Avoids wasted time on too-easy or impossible questions
@@ -60,7 +65,7 @@ Need #3: Tracking of strengths and weak topics over time
  Why it matters: Helps focus revision efforts strategically
  Current workaround: Maintain spreadsheets or mental notes
 
-User Pain Points:
+#### User Pain Points
 
 Too many irrelevant or trivial problems
 
@@ -68,36 +73,37 @@ Feedback is surface-level (just “right” or “wrong”)
 
 No guidance on how to improve in weak areas
 
-Secondary Users (Optional)
+##### Secondary Users (Optional)
 
 Tutors / Teachers: May use the platform to assign or monitor student progress
 
 Educational institutions: Could adopt the system for cohorts or classes
 
-3. Success Criteria
-Product Success Metrics
+## Success Criteria
 
-Metric #1: Task completion time
+### Product Success Metrics
+
+- Metric #1: Task completion time
  Target: A user can generate and complete a mock test in < 20 minutes
  Measurement method: Timestamp from test start to finish in analytics logs
 
-Metric #2: Accuracy / Quality of generated questions
+- Metric #2: Accuracy / Quality of generated questions
  Target: ≥ 85% of questions rated “on target” by expert reviewers
  Measurement method: Expert panel review on sample generated sets
 
-Metric #3: User satisfaction
+- Metric #3: User satisfaction
  Target: Average feedback ≥ 4.0 / 5
  Measurement method: Exit survey after test session
 
-Metric #4: Engagement / Adoption
+- Metric #4: Engagement / Adoption
  Target: At least 30 users take > 1 test in the pilot
  Measurement method: Usage analytics over pilot period
 
-Metric #5: Cost per user interaction
+- Metric #5: Cost per user interaction
  Target: <$0.10 per generation session
  Measurement method: Track API usage cost vs number of sessions
 
-Technical Success Criteria
+### Technical Success Criteria
 
 Response latency (p95): < 3 seconds
 
@@ -107,34 +113,35 @@ API error rate: < 5% failed requests
 
 Cost per user: ≤ target above
 
-Learning Goals
+## Learning Goals
 
-Giorgi Mikaberidze (Backend/AI):
+**Giorgi Mikaberidze** (Backend/AI):
  - Advanced prompt engineering and Gemini API integration
  - Scalable Express / Node.js service architecture
 
-Nikoloz Kvirikashvili (Database/Backend):
+**Nikoloz Kvirikashvili** (Database/Backend):
  - MSSQL schema design, optimization, migrations
  - Query performance tuning and indexing
 
-Sergi Arabidze (AI Specialist):
+**Sergi Arabidze** (AI Specialist):
  - Experimenting with complex AI features
  - Evaluating model output quality and bias
 
-Luka Mekoshvili (Frontend/Communication):
+**Luka Mekoshvili** (Frontend/Communication):
  - Modern React patterns, state management
  - Team communication, stakeholder documentation
 
-Lasha Giorgi Tskhadadze (Designer/Frontend):
+**Lasha-Giorgi Tskhadadze** (Designer/Frontend):
  - UI/UX design, responsive layout, accessibility
  - Implementation of polished frontend interfaces
 
-4. Technical Architecture
-System Overview
+## Technical Architecture
+
+### System Overview
 
 Users access the React frontend to request a mock exam. The frontend sends that request to the Node.js/Express backend, which consults the MSSQL database for user history and question metadata, then calls the Gemini API to generate new questions and reflective prompts. The backend returns the exam and feedback responses, which the frontend displays and stores user responses. Performance metrics and logs are captured.
 
-Architecture Diagram
+### Architecture Diagram
 
                ┌──────────────┐
                │    User      │  
@@ -159,9 +166,10 @@ Architecture Diagram
 │   MSSQL DB    │                 │ Gemini AI API │
 │ (user / test) │                 └──────────────┘
 └──────────────┘
-Technology Stack
 
-Frontend:
+### Technology Stack
+
+#### Frontend
 
 Framework: React
 
@@ -169,7 +177,7 @@ Key libraries: React Router, Styled Components or Tailwind
 
 Hosting: Azure Static Web Apps or similar
 
-Backend:
+#### Backend
 
 Framework: Node.js + Express
 
@@ -177,19 +185,19 @@ Language: JavaScript / TypeScript
 
 Hosting: Azure App Service
 
-AI/ML Services:
+#### AI/ML Services
 
 Primary model: Gemini (for question generation and feedback)
 
 Fallback model: Simpler GPT or cached responses
 
-Data Storage:
+#### Data Storage
 
 MSSQL for relational data (users, test history)
 
 (Optional) Future: vector storage or embeddings store
 
-DevOps / Tooling:
+#### DevOps / Tooling
 
 Version control: GitHub
 
@@ -197,7 +205,7 @@ CI/CD: GitHub Actions (if time allows)
 
 Monitoring & Logging: Custom logs, error tracking
 
-Data Flow
+### Data Flow
 
 User requests a new mock test via frontend
 
@@ -217,7 +225,7 @@ Backend stores results, updates user model, logs metrics
 
 Frontend displays performance dashboard
 
-Critical Path Latency Budget:
+### Critical Path Latency Budget
 
 Frontend validation & UI: <100 ms
 
@@ -235,7 +243,7 @@ Primary use: Text generation (question & reasoning)
 
 Model: Gemini with tuned prompt
 
-Prompt Strategy:
+### Prompt Strategy
 
 Template includes: user performance summary, problem constraints, style guide
 
@@ -257,14 +265,16 @@ Top-k: retrieve top 3–5 context chunks
 
 Reranking: optional based on relevance scores
 
-Third-Party Services & APIs
+### Third-Party Services & APIs
 
-Service	Purpose	Cost Estimate	Rate Limits / Notes
-Gemini API	Question + feedback generation	~$0.02–0.05 per 1k tokens	Request throttling may apply
-Azure App Service	Hosting backend	Free / minimal tier	Scale if needed
-MSSQL on Azure	Database	Free / student tier	Must monitor performance
-5. Risk Assessment
-Technical Risks
+Service Purpose Cost Estimate Rate Limits / Notes
+Gemini API Question + feedback generation ~$0.02–0.05 per 1k tokens Request throttling may apply
+Azure App Service Hosting backend Free / minimal tier Scale if needed
+MSSQL on Azure Database Free / student tier Must monitor performance
+
+## Risk Assessment
+
+### Technical Risks
 
 Risk #1: API Rate Limits or Outages
 
@@ -308,7 +318,7 @@ Impact: Medium
 
 Mitigation: Freeze core features after a deadline, weekly scope review
 
-Team Risks
+### Team Risks
 
 Risk #1: Uneven workload distribution
 
@@ -326,7 +336,7 @@ Impact: Medium
 
 Mitigation: Buffer time in schedule, cross‑training roles
 
-Safety & Ethical Risks
+### Safety & Ethical Risks
 
 Risk #1: Prompt injection / malicious input
 
@@ -352,7 +362,7 @@ Impact: High
 
 Mitigation: Store minimal PII, anonymize user data, secure database
 
-Contingency Plans
+### Contingency Plans
 
 If primary model fails/unavailable: switch to fallback (e.g. GPT-3.5) and inform users of degraded mode
 
@@ -360,10 +370,11 @@ If testers are scarce: fallback to synthetic user evaluation using curated datas
 
 If behind schedule: drop or delay optional features (feedback types, dashboards) and focus on core generation + test flow
 
-6. Research Plan
-What We Need to Learn
+## Research Plan
 
-Technical Questions:
+### What We Need to Learn
+
+#### Technical Questions
 
 How to integrate streaming API responses in Express backend
  Resources: API docs, example repos
@@ -377,7 +388,7 @@ How to mitigate prompt injection and maintain safe generation
  Resources: OWASP, prompt safety guides
  Timeline: Week 6
 
-Product Questions:
+#### Product Questions
 
 Do users prefer short or detailed feedback prompts?
  Method: A/B test during pilot
@@ -387,7 +398,7 @@ What interface layout is easiest for test navigation?
  Method: Usability testing
  Timeline: Weeks 5–7
 
-Experiments & Prototypes
+#### Experiments & Prototypes
 
 Week 3–4: Proof of Concept
  Goal: Full pipeline from request → AI → response
@@ -405,7 +416,7 @@ Week 11–12: Optimization & Evaluation
  Goal: Reduce latency and cost
  Success: Meet technical success criteria
 
-Literature & Resources
+## Literature & Resources
 
 OpenAI Cookbook (prompting, retrieval)
 
@@ -413,13 +424,14 @@ Research papers on adaptive testing and AI in education
 
 Prompt safety / injection mitigation resources
 
-7. User Study Plan
-Research Ethics
+## User Study Plan
+
+### Research Ethics
 
 Do we need IRB approval?
 Yes — because we collect feedback and potentially work with minors. We will prepare consent forms and abide by an IRB (or equivalent) process.
 
-Data we’ll collect:
+### Data we’ll collect
 
 Task completion times, user responses, survey feedback, optional screen recordings
 
@@ -435,7 +447,7 @@ Users may withdraw at any time
 
 Clear explanation of data usage, anonymity, and usage boundaries
 
-Recruitment Plan
+### Recruitment Plan
 
 Number: 5–8 users per testing round
 
@@ -451,7 +463,7 @@ Timeline:
  – Week 11–12: User testing round 2
  – Week 14: Final feedback session
 
-Testing Protocol
+### Testing Protocol
 
 Session Structure (45‑60 min):
 
@@ -475,7 +487,7 @@ Post-Task Questions (10 min):
 
 Wrap-up (5 min): Thank them, provide compensation, ask follow‑up permission
 
-Data Collection Methods:
+### Data Collection Methods
 
 Screen recording (with permission)
 
@@ -495,7 +507,7 @@ Anonymized summaries in project reports
 
 No identifiable data stored in public repo
 
-Analysis Plan:
+### Analysis Plan
 
 Quantitative: completion rates, average times, error rates, satisfaction scores
 
@@ -503,7 +515,7 @@ Qualitative: thematic coding of user feedback, identification of usability issue
 
 Use findings to prioritize improvements and refine features
 
-Deliverables:
+### Deliverables
 
 User research report (mid and final)
 
@@ -511,44 +523,50 @@ Feature prioritization updates
 
 Input into final case study
 
-8. Project Timeline & Milestones
-Weekly Breakdown
-Week	Focus	Deliverables	Owner(s)
-1	Setup	Team formation, project idea	All
-2	Planning	This proposal, team contract, dev environment	All
-3	Core Flow	Basic request → AI response pipeline	Giorgi / Sergi
-4	Design Review	Final architecture, evaluation plan	All
-5	Retrieval	Integrate archived data / context	Nikoloz / Sergi
-6	Functionality	Feedback prompt logic, structured output	Sergi / Giorgi
-7	User Testing 1	First round testing & feedback	All
-8	Iteration	Apply feedback, polish core flows	All
-9	Midterm / Buffer	Catch-up, refine modules	All
-10	Optimization	Caching, prompt tuning, cost reduction	Giorgi / Nikoloz
-11	Safety & Audit	Bias testing, red teaming	All
-12	Evaluation	Golden dataset tests, regression	Sergi / Giorgi
-13	Production	CI/CD, deployment, monitoring	Nikoloz / Giorgi
-14	Polish & Testing 2	Refinements, second user round	All
-15	Final Demo	Presentation, demo, case study	All
-Major Milestones
+## Project Timeline & Milestones
 
-✅ Milestone 1: Proposal submission (Week 2)
+### Weekly Breakdown
 
-🎯 Milestone 2: Design Review (Week 4) — architecture, evaluation plan, backlog
+| Week | Focus / Deliverable | Owners |
+|------|---------------------|--------|
+| 1 | Setup — Team formation, project idea | All |
+| 2 | Planning — This proposal, team contract, dev environment | All |
+| 3 | Core Flow — Basic request → AI response pipeline | Giorgi / Sergi |
+| 4 | Design Review — Final architecture, evaluation plan | All |
+| 5 | Retrieval — Integrate archived data / context | Nikoloz / Sergi |
+| 6 | Functionality — Feedback prompt logic, structured output | Sergi / Giorgi |
+| 7 | User Testing 1 — First round testing & feedback | All |
+| 8 | Iteration — Apply feedback, polish core flows | All |
+| 9 | Midterm / Buffer — Catch-up, refine modules | All |
+| 10 | Optimization — Caching, prompt tuning, cost reduction | Giorgi / Nikoloz |
+| 11 | Safety & Audit — Bias testing, red teaming | All |
+| 12 | Evaluation — Golden dataset tests, regression | Sergi / Giorgi |
+| 13 | Production — CI/CD, deployment, monitoring | Nikoloz / Giorgi |
+| 14 | Polish & Testing 2 — Refinements, second user round | All |
+| 15 | Final Demo — Presentation, demo, case study | All |
 
-🎯 Milestone 3: Safety & Evaluation Audit (Week 11) — red team, bias checks, telemetry
+### Major Milestones
 
-🎯 Milestone 4: Final Demo (Week 15) — working product, presentation, case study
+1. Milestone 1 — Proposal submission (Week 2)  
+       - Deliverable: Final proposal submitted
 
-Dependencies:
+2. Milestone 2 — Design review (Week 4)  
+       - Deliverables: architecture diagrams, evaluation plan, product backlog
 
-Core flow (Week 3) is prerequisite to user testing
+3. Milestone 3 — Safety & evaluation audit (Week 11)  
+       - Deliverables: red‑teaming report, bias checks, telemetry baseline
 
-Retrieval logic (Week 5) depends on architecture being stable
+4. Milestone 4 — Final demo (Week 15)  
+       - Deliverables: Working product, presentation, case study
 
-Feature freeze must precede optimization
+#### Dependencies
 
-Backup Plan:
+- Core flow (Week 3) is a prerequisite for user testing  
+- Retrieval logic (Week 5) depends on a stable architecture  
+- Feature freeze must precede optimization efforts
 
-If behind schedule: drop nonessential features (expanded dashboards, extra feedback modes)
+#### Backup plan
 
-Core features (adaptive test + feedback + basic tracking) will remain
+- If behind schedule: drop nonessential features (expanded dashboards, extra feedback modes)  
+- Preserve core features: adaptive test + feedback + basic tracking  
+- Reprioritize tasks and use buffer weeks as needed

@@ -1,4 +1,4 @@
-## Team Members
+# Team Members
 
 | Name                    | Email                                                                     | GitHub Username      | Primary Role       |
 | ----------------------- | ------------------------------------------------------------------------- | -------------------- | ------------------ |
@@ -10,7 +10,7 @@
 
 ---
 
-### Giorgi Mikaberidze – Backend/AI Developer
+## Giorgi Mikaberidze – Backend/AI Developer
 
 **Primary Responsibilities:**
 
@@ -32,7 +32,7 @@
 
 ---
 
-### Nikoloz Kvirikashvili – Database/Backend Developer
+## Nikoloz Kvirikashvili – Database/Backend Developer
 
 **Primary Responsibilities:**
 
@@ -54,7 +54,7 @@
 
 ---
 
-### Sergi Arabidze – AI Specialist
+## Sergi Arabidze – AI Specialist
 
 **Primary Responsibilities:**
 
@@ -76,7 +76,7 @@
 
 ---
 
-### Luka Mekoshvili – Frontend/Communication Lead
+## Luka Mekoshvili – Frontend/Communication Lead
 
 **Primary Responsibilities:**
 
@@ -98,7 +98,7 @@
 
 ---
 
-### Lasha Giorgi Tskhadadze – Designer/Frontend Developer
+## Lasha Giorgi Tskhadadze – Designer/Frontend Developer
 
 **Primary Responsibilities:**
 
@@ -120,7 +120,7 @@
 
 ---
 
-### Shared Responsibilities
+## Shared Responsibilities
 
 - Code reviews and pull request feedback
 - Documentation (README, API docs, inline comments)
