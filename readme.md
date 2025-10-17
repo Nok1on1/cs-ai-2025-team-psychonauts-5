@@ -1,4 +1,4 @@
-# [Dialogos]
+# **Project Name:** Dialogos
 
 **Team:** Luka Mekoshvili, Lasha-Giorgi Tskhadadze, Sergi Arabidze, Nikoloz Kvirikashvili, Giorgi Mikaberidze
 **Course:** Building AI‑Powered Applications  
