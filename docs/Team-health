@@ -1,0 +1,269 @@
+🤝 Team Health Check — Week 4
+
+Team Name: Dialogos Team
+Team Members: Luka M., Giorgi M., Lasha Giorgi T., Nikoloz K., Sergi A.
+Date: Week 4, November 7, 2025
+
+📊 Quick Health Check
+Category	Rating (1–5)	Notes
+Communication	4/5	Communication is clear via Discord, Notion, and weekly meetings.
+Collaboration	5/5	Everyone contributes actively and supports each other.
+Technical Progress	4/5	Development is on schedule; minor UI updates pending.
+Workload Balance	4/5	Mostly balanced, though strategist needs extra guidance.
+Morale	5/5	Team is positive, engaged, and motivated.
+Confidence in Success	5/5	Strong belief in project direction and deliverables.
+
+Overall Team Health: 4.5/5
+
+✅ What’s Working Well
+Communication
+
+Team uses Discord and Notion effectively to stay aligned.
+
+Regular check-ins ensure no one feels left out of decision-making.
+
+Feedback is constructive and received well.
+
+Technical Collaboration
+
+Developers coordinate through GitHub and review each other’s code before merging.
+
+Design and backend integration have been smooth so far.
+
+Task Management
+
+Weekly sprint planning helps maintain focus.
+
+Deadlines are realistic and being met consistently.
+
+⚠️ What Needs Improvement
+Challenge 1: Strategic Planning
+
+Description: Our team strategist occasionally struggles to outline clear action plans or prioritize tasks effectively.
+Impact: Causes minor delays in goal alignment and roadmap updates.
+Proposed Solution:
+
+Strategist collaborates with team lead during weekly planning.
+
+Others provide clearer feedback on proposed strategies.
+
+Use Notion to visualize weekly targets and progress.
+Owner: Lasha Giorgi T. (Strategist)
+Target Date: Week 6
+
+Challenge 2: UI Design Consistency
+
+Description: Some pages of the Dialogos interface differ slightly in layout and visual hierarchy.
+Impact: May cause minor confusion during user testing.
+Proposed Solution:
+
+Design lead standardizes UI components.
+
+Developers review and apply consistent styling.
+
+Include visual guidelines in Notion.
+Owner: Giorgi M.
+Target Date: Week 5
+
+Challenge 3: Testing Workflow
+
+Description: Testing procedures are currently informal and not documented.
+Impact: Hard to track progress or reproduce issues.
+Proposed Solution:
+
+Establish a clear testing checklist.
+
+Assign one person to log bugs and progress weekly.
+
+Use GitHub Issues for all testing-related notes.
+Owner: Luka M.
+Target Date: Week 6
+
+👥 Individual Check-Ins
+Luka M.
+
+Role: Lead Developer / Project Lead
+Current Tasks:
+
+Backend development for user learning modules.
+
+Integrating progress tracking API.
+Capacity This Week: 4 (comfortable)
+Blockers: None
+Support Needed: Design confirmation for dashboard UI
+How They’re Feeling: Focused and positive
+
+Giorgi M.
+
+Role: UI/UX Designer
+Current Tasks:
+
+Finalizing design for study dashboard
+
+Creating consistency guide for visual elements
+Capacity This Week: 3 (busy)
+Blockers: Slight delay waiting for strategist’s content outline
+Support Needed: Faster content structure decisions
+How They’re Feeling: Productive and motivated
+
+Lasha Giorgi T.
+
+Role: Strategist / Content Planner
+Current Tasks:
+
+Outlining exam preparation flow for students
+
+Drafting learning objectives for different exam types
+Capacity This Week: 4 (comfortable)
+Blockers: Needs more structure in defining weekly strategy goals
+Support Needed: Collaboration with Luka for clearer prioritization
+How They’re Feeling: Slightly uncertain, improving
+
+Nikoloz K.
+
+Role: Backend Developer
+Current Tasks:
+
+API integration and database optimization
+
+Supporting Luka with backend modules
+Capacity This Week: 4 (comfortable)
+Blockers: None
+Support Needed: Occasional design clarifications
+How They’re Feeling: Confident and engaged
+
+Sergi A.
+
+Role: Frontend Developer
+Current Tasks:
+
+Implementing dashboard UI
+
+Linking frontend to API endpoints
+Capacity This Week: 4 (comfortable)
+Blockers: Waiting on finalized UI components
+Support Needed: Design approvals
+How They’re Feeling: Motivated and productive
+
+🔄 Updated Team Contract (If Changes Needed)
+Changes from Week 2 Contract
+Aspect	Week 2	Week 4 Update	Reason
+Meeting Schedule	Twice per week	Kept same	Works well for everyone
+Roles	Strategist fully independent	Now paired with lead	To improve planning clarity
+Decision Process	Group consensus	Documented in Notion	Ensures transparency
+
+Updated Agreements
+
+Meeting Schedule: Tuesdays and Fridays, 7 PM
+
+Communication: Daily check-ins on Discord; urgent updates via Telegram
+
+Roles & Responsibilities:
+
+Lead Developer (Luka): Oversee codebase and project structure
+
+UI/UX Designer (Giorgi M.): Visual design and usability
+
+Strategist (Lasha Giorgi T.): Learning content flow and task planning
+
+Backend Developer (Nikoloz K.): Support API and data integration
+
+Frontend Developer (Sergi A.): Frontend implementation and API connection
+
+Decision-Making: All major decisions discussed in meetings and recorded in Notion
+
+Conflict Resolution: Private discussion between involved members; if unresolved, addressed in next meeting
+
+🚨 Risk Mitigation
+Risk 1: Strategic Delays
+
+Description: If planning issues continue, development might lose focus
+Likelihood: Medium
+Impact: Medium
+Mitigation Plan: Pair strategist with project lead; review goals weekly
+Early Warning Signs: Missed planning deadlines
+Escalation Path: Discuss in next meeting; involve instructor if unresolved
+
+Risk 2: Inconsistent Design Implementation
+
+Description: Differences in component styles across screens
+Likelihood: Medium
+Impact: Low
+Mitigation Plan: Finalize style guide; enforce component consistency in code reviews
+Early Warning Signs: Visual mismatches or user confusion
+Escalation Path: Designer to recheck all pages before testing
+
+📈 Progress Tracking
+Velocity (Tasks Completed per Week)
+Week	Planned	Completed	%
+3	8	7	87%
+4	10	9	90%
+
+Trend: ⬆️ Improving
+Insights: Productivity is increasing as the team grows more familiar with tools and workflow
+
+💪 Team Strengths
+
+Technical Skills:
+
+Strong full-stack knowledge (backend + frontend)
+
+Quick problem-solving during integration
+
+Collaboration:
+
+Respectful and supportive teamwork
+
+Effective division of tasks and peer assistance
+
+Problem-Solving:
+
+Issues addressed quickly through open communication
+
+Adaptability to changing priorities
+
+🎯 Goals for Next 2 Weeks
+Team Goals
+
+Finalize full user flow for study sessions
+
+Conduct first user testing session
+
+Standardize all design elements
+
+Individual Goals
+
+Luka M.: Complete backend for learning progress tracking
+
+Giorgi M.: Finalize design system and apply across all pages
+
+Lasha Giorgi T.: Develop weekly learning modules for user testing
+
+Nikoloz K.: Finish API endpoints and ensure database stability
+
+Sergi A.: Complete frontend integration with backend
+
+📝 Action Items from This Check-In
+
+ Pair strategist with project lead for clearer planning — Owner: Lasha, Due: Week 6
+
+ Finalize UI consistency guide — Owner: Giorgi, Due: Week 5
+
+ Create testing checklist in GitHub Issues — Owner: Luka, Due: Week 6
+
+✅ Sign-Off
+
+All team members have reviewed and agree with this assessment:
+
+ Luka M.
+
+ Giorgi M.
+
+ Lasha Giorgi T.
+
+ Nikoloz K.
+
+ Sergi A.
+
+Date Completed: November 7, 2025
+Next Check-In: Week 6
