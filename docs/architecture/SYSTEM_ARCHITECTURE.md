@@ -84,11 +84,11 @@ Dialogos is an AI-powered entrance exam preparation platform for Georgian studen
    │  MSSQL (Azure)    │          │  Google Gemini API              │
    │                   │          │                                 │
    │  Tables:          │          │  Models:                        │
-   │  • Users          │          │  • gemini-1.5-flash (80%)       │
+   │  • Users          │          │  • gemini-2.5-flash (80%)       │
    │  • Tests          │          │    Fast, cheap, simple Qs       │
    │  • Responses      │          │    Cost: $0.0008/test           │
    │  • Performance    │          │                                 │
-   │                   │          │  • gemini-1.5-pro (20%)         │
+   │                   │          │  • gemini-2.5-pro (20%)         │
    │  Features:        │          │    Slower, expensive, complex   │
    │  • ACID           │          │    Cost: $0.012/test            │
    │  • Transactions   │          │                                 │
@@ -508,13 +508,13 @@ async function generateTest(userId, config) {
   const questions = []
   
   // Generate 8 simple/medium questions with Flash
-  const flashModel = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+  const flashModel = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
   const flashResult = await flashModel.generateContent(prompt.flash)
   const flashQuestions = JSON.parse(flashResult.response.text())
   questions.push(...flashQuestions)
   
   // Generate 2 complex questions with Pro
-  const proModel = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' })
+  const proModel = genAI.getGenerativeModel({ model: 'gemini-2.5-pro' })
   const proResult = await proModel.generateContent(prompt.pro)
   const proQuestions = JSON.parse(proResult.response.text())
   questions.push(...proQuestions)
@@ -709,7 +709,7 @@ function selectModel(questionComplexity, topic) {
   
   if (proTopics.includes(topic) || questionComplexity === 'complex') {
     return {
-      model: 'gemini-1.5-pro',
+      model: 'gemini-2.5-pro',
       cost: 0.012, // per request
       timeout: 5000
     }
@@ -717,7 +717,7 @@ function selectModel(questionComplexity, topic) {
   
   // Use Flash for everything else
   return {
-    model: 'gemini-1.5-flash',
+    model: 'gemini-2.5-flash',
     cost: 0.0008,
     timeout: 3000
   }
@@ -780,8 +780,8 @@ Provide a Socratic hint (2-3 sentences) that helps them realize their mistake. A
 
 | Model | Input Cost | Output Cost | Avg Tokens | Cost/Test | Usage % |
 |-------|------------|-------------|------------|-----------|---------|
-| Gemini 1.5 Flash | $0.075/1M | $0.30/1M | 2500 | $0.0008 | 80% |
-| Gemini 1.5 Pro | $1.25/1M | $5.00/1M | 2500 | $0.012 | 20% |
+| Gemini 2.5 Flash | $0.075/1M | $0.30/1M | 2500 | $0.0008 | 80% |
+| Gemini 2.5 Pro | $1.25/1M | $5.00/1M | 2500 | $0.012 | 20% |
 | **Blended Average** | - | - | - | **$0.003** | 100% |
 
 **Monthly Projections (1000 tests):**
@@ -1279,7 +1279,7 @@ module.exports = logger
 ### ADR-003: Gemini vs GPT-4 for AI
 
 **Context:** Need cost-effective AI for question generation  
-**Decision:** Use Gemini 1.5 (Flash + Pro hybrid)  
+**Decision:** Use Gemini 2.5 (Flash + Pro hybrid)  
 **Rationale:**
 - 10-20x cheaper than GPT-4
 - Structured output support
