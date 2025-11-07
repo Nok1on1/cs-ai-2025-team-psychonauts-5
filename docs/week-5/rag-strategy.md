@@ -388,7 +388,7 @@ graph TB
     
     J --> K[Inject into Gemini Prompt<br/>'Generate similar question...']
     
-    K --> L[Gemini 1.5 Flash<br/>Adaptive Question Generation]
+    K --> L[Gemini 2.5 Flash<br/>Adaptive Question Generation]
     
     L --> M[Generated Question<br/>+ Citations + Metadata]
     

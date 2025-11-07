@@ -42,7 +42,7 @@
 | Backend Deployment | Azure App Service | - | Free student tier |
 | Database | MSSQL | Latest | Azure-hosted, relational model |
 | ORM | Sequelize | 6.33.0 | SQL query builder and migrations |
-| AI Service | Google Gemini API | 1.5 | gemini-1.5-flash (80%) + gemini-1.5-pro (20%) |
+| AI Service | Google Gemini API | 2.5 | gemini-2.5-flash (80%) + gemini-2.5-pro (20%) |
 | Authentication | JWT | 9.0.2 | JSON Web Tokens for auth |
 | Styling | Tailwind CSS | 3.3.0 | Utility-first CSS framework |
 | HTTP Client | Axios | 1.5.0 | API communication |
