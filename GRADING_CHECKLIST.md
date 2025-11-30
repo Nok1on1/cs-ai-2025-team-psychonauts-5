@@ -1,9 +1,9 @@
 # Grading Checklist - Week 6 & 7 Combined Homework
 
-**Team Name:** [Your Team Name]  
-**Project Title:** [Your Capstone Project Title]  
-**Submission Date:** [Date]  
-**Team Members:** [Name 1, Name 2, Name 3]
+**Team Name:** psychonauts 5
+**Project Title:** dialogos  
+**Submission Date:** 12/01/2025  
+**Team Members:** G. Mikaberidze, LG. Tskadadze, S. Arabidze, L. Mekoshvili, N. Kvirikashvili
 
 ## Part A: Week 6 - Function Calling (110 points)
 
@@ -11,7 +11,7 @@
 - [ ] **Function 1:** [Name] - Located at: [path/to/file.py]
 - [ ] **Function 2:** [Name] - Located at: [path/to/file.py]
 - [ ] **Function 3 (if applicable):** [Name] - Located at: [path/to/file.py]
-- [ ] Pydantic models defined at: [path/to/models.py]
+- [ ] Pydantic models defined at: [pydantic-models.py](capstone/models/pydantic_models.py)
 - [ ] JSON schemas defined at: [path/to/schemas or agent.py]
 
 **Quick Navigation:**
