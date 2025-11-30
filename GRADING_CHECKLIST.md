@@ -367,5 +367,7 @@ Before submitting, verify these items:
 ---
 
 **Submission Timestamp:** [Will be recorded upon submission]  
+
 **Submitted By:** Lasha Giorgi Tskhadadze 
-**Repository URL:** `https://github.com/[your-org]/dialogos`
+
+**Repository URL:** `[https://github.com/Nok1on1/cs-ai-2025-team-psychonauts-5]`
