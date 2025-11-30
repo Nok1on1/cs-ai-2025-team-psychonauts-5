@@ -1,0 +1,25 @@
+{
+  "name": "generate_socratic_feedback",
+  "description": "Provide Socratic feedback for a question and the user's selected answer.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "question": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"},
+          "text": {"type": "string"},
+          "choices": {"type": "array", "items": {"type": "string"}},
+          "correct_index": {"type": "integer", "minimum": 0},
+          "subject": {"type": "string", "enum": ["math", "logic"]},
+          "difficulty": {"type": "integer", "minimum": 1, "maximum": 3}
+        },
+        "required": ["id", "text", "choices", "correct_index", "subject", "difficulty"],
+        "additionalProperties": false
+      },
+      "selected_index": {"type": "integer", "minimum": 0}
+    },
+    "required": ["question", "selected_index"],
+    "additionalProperties": false
+  }
+}

@@ -8,67 +8,67 @@
 ## Part A: Week 6 - Function Calling (110 points)
 
 ### Functions Implementation (40 points)
-- [ ] **Function 1:** [Name] - Located at: [path/to/file.py]
-- [ ] **Function 2:** [Name] - Located at: [path/to/file.py]
-- [ ] **Function 3 (if applicable):** [Name] - Located at: [path/to/file.py]
-- [ ] Pydantic models defined at: [pydantic-models.py](capstone/models/pydantic_models.py)
-- [ ] JSON schemas defined at: [path/to/schemas or agent.py]
+- [x] **Function 1:** generate_test - Located at: capstone/functions.py
+- [x] **Function 2:** grade_test - Located at: capstone/functions.py
+- [x] **Function 3 (if applicable):** generate_socratic_feedback - Located at: capstone/functions.py
+- [x] Pydantic models defined at: [pydantic-models.py](capstone/models/pydantic_models.py) and lightweight models in capstone/functions.py
+- [x] JSON schemas defined at: tool_schemas/*.json
 
 **Quick Navigation:**
-- Functions code: [Direct link to GitHub file]
-- Models code: [Direct link to GitHub file]
-- Agent/orchestration: [Direct link to GitHub file]
+- Functions code: capstone/functions.py
+- Models code: capstone/models/pydantic_models.py
+- Agent/orchestration: agent_gemini.py
 
 ### Tests & Demo (30 points)
-- [ ] Test file located at: [path/to/test_functions.py]
-- [ ] All tests pass (screenshot/evidence at: [path or link])
-- [ ] Demo video link: [YouTube/Drive URL]
-- [ ] Demo video shows: ✅ AI calling functions ✅ Multiple scenarios ✅ Error handling
+- [x] Test file located at: tests/test_functions.py
+- [ ] All tests pass (screenshot/evidence at: docs/evidence/tests-output.txt)
+- [ ] Demo video link: [TBD – upload link]
+- [x] Demo video shows: ✅ AI calling functions ✅ Multiple scenarios ✅ Error handling
 
 ### Documentation & Code Quality (20 points)
-- [ ] README updated with Week 6 section: [Direct link to section]
-- [ ] All functions have docstrings: ✅ Yes / ❌ No
-- [ ] Type hints present: ✅ Yes / ❌ No
-- [ ] Error handling implemented: ✅ Yes / ❌ No
-- [ ] No hard-coded API keys: ✅ Confirmed / ❌ Found issues
+- [x] README updated with Week 6 section: readme.md (Week 6 — Function Calling)
+- [x] All functions have docstrings: ✅ Yes
+- [x] Type hints present: ✅ Yes
+- [x] Error handling implemented: ✅ Yes
+- [x] No hard-coded API keys: ✅ Confirmed
 
 ### GitHub (10 points)
 - [ ] Descriptive commit messages used: ✅ Yes
-- [ ] .env is NOT in repo: ✅ Confirmed
-- [ ] .env.example exists: ✅ Yes
+- [ ] .env is NOT in repo: ✅ Confirmed (currently sanitized but tracked; remove from VCS and keep locally)
+- [x] .env.example exists: ✅ Yes
 - [ ] All files pushed to main branch: ✅ Confirmed
 
 ### Evaluation & Safety Logs (10 points)
 Located in: `course-pack/labs/lab-6/`
-- [ ] `evaluation_notes.md`: [Direct link]
-- [ ] `safety_checklist.md`: [Direct link]
-- [ ] `ai_use_log.md`: [Direct link]
-- [ ] `capstone_link.md`: [Direct link]
+- [x] `evaluation_notes.md`: course-pack/labs/lab-6/evaluation_notes.md
+- [x] `safety_checklist.md`: course-pack/labs/lab-6/safety_checklist.md
+- [x] `ai_use_log.md`: course-pack/labs/lab-6/ai_use_log.md
+- [x] `capstone_link.md`: course-pack/labs/lab-6/capstone_link.md
 
 ---
 
 ## Part B: Week 7 - Design Review (5 points)
 
 ### Main Documents
-- [ ] Design Review Document: `docs/design-review-week7.md` - [Direct link]
-- [ ] Event Schemas: `docs/event-schemas.md` - [Direct link]
-- [ ] Updated Architecture Diagram: `docs/architecture-week7.[png/pdf]` - [Direct link]
+- [x] Design Review Document: `docs/design-review-week7.md` - docs/design-review-week7.md
+- [x] Event Schemas: `docs/event-schemas.md` - docs/event-schemas.md
+- [ ] Updated Architecture Diagram: `docs/architecture-week7.[png/pdf]` - [TBD]
 
 ### Design Review Sections Completed (check all 6)
-- [ ] Section 1: Architecture Validation (1-2 pages)
-- [ ] Section 2: Event Schema Documentation (2-3 pages)
-- [ ] Section 3: Smoke Test Results (1-2 pages)
-- [ ] Section 4: Performance Baseline (1 page)
-- [ ] Section 5: Hypothesis Validation (1-2 pages)
-- [ ] Section 6: Readiness Assessment (1 page)
+- [x] Section 1: Architecture Validation (1-2 pages)
+- [x] Section 2: Event Schema Documentation (2-3 pages)
+- [x] Section 3: Smoke Test Results (1-2 pages)
+- [x] Section 4: Performance Baseline (1 page)
+- [x] Section 5: Hypothesis Validation (1-2 pages)
+- [x] Section 6: Readiness Assessment (1 page)
 
 ### Evidence Folder
-- [ ] Evidence folder exists at: `docs/evidence/`
-- [ ] Contains: Logs, screenshots, performance data, validation results
+- [x] Evidence folder exists at: `docs/evidence/`
+- [ ] Contains: Logs, screenshots, performance data, validation results (add test run output/screenshots)
 
 ### README Update
-- [ ] README links to design review: [Direct link to README section]
-- [ ] README notes architectural changes (if any): ✅ Yes / ❌ No changes
+- [x] README links to design review: readme.md (Design Review — Week 7)
+- [x] README notes architectural changes (if any): ✅ Yes
 
 ---
 

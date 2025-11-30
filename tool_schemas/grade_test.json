@@ -1,0 +1,24 @@
+{
+  "name": "grade_test",
+  "description": "Grade a completed test session with the user's selected answers.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "session_id": {"type": "string"},
+      "answers": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "question_id": {"type": "string"},
+            "selected_index": {"type": "integer", "minimum": 0}
+          },
+          "required": ["question_id", "selected_index"],
+          "additionalProperties": false
+        }
+      }
+    },
+    "required": ["session_id", "answers"],
+    "additionalProperties": false
+  }
+}

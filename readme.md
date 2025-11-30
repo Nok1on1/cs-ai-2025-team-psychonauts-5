@@ -14,12 +14,14 @@ Whether you're aiming to sharpen your test-taking skills or deepen your understa
 
 ## Status
 
-🚧 **Project Status:** Planning (Week 2)
+🚧 **Project Status:** Week 6–7 Milestones
 
 - [x] Team formed
 - [x] Repository created
 - [x] Proposal submitted
-- [ ] Core features implemented
+- [x] Week 6: Function-calling demo (generate_test, grade_test, Socratic feedback)
+- [x] Week 7: Design review docs and event schemas
+- [ ] Integrate real model calls and persistence
 - [ ] User testing completed
 
 ## Quick Links
@@ -27,6 +29,17 @@ Whether you're aiming to sharpen your test-taking skills or deepen your understa
 - [Capstone Proposal](./docs/capstone-proposal.md)
 - [Team Contract](./docs/team-contract.md)
 - [Setup Instructions](./docs/setup.md)
+- Week 6 — Function Calling:
+  - Functions: [capstone/functions.py](./capstone/functions.py)
+  - Tool Schemas: [tool_schemas/](./tool_schemas)
+  - Agent Stub: [agent_gemini.py](./agent_gemini.py)
+  - Tests: [tests/test_functions.py](./tests/test_functions.py)
+  - Demo: [demo_script.py](./demo_script.py)
+  - Evidence: [docs/evidence/tests-output.txt](./docs/evidence/tests-output.txt)
+- Week 7 — Design Review:
+  - Design Review Doc: [docs/design-review-week7.md](./docs/design-review-week7.md)
+  - Event Schemas: [docs/event-schemas.md](./docs/event-schemas.md)
+  - Architecture (placeholder): [docs/architecture-week7.md](./docs/architecture-week7.md)
 
 ## Tech Stack
 

@@ -1,0 +1,14 @@
+{
+  "name": "generate_test",
+  "description": "Generate a test session for a given subject and difficulty.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "subject": {"type": "string", "enum": ["math", "logic"]},
+      "difficulty": {"type": "integer", "minimum": 1, "maximum": 3},
+      "num_questions": {"type": "integer", "minimum": 1, "maximum": 20}
+    },
+    "required": ["subject"],
+    "additionalProperties": false
+  }
+}
