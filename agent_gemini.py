@@ -308,4 +308,6 @@ def run(user_message: str) -> Dict[str, Any]:
 
 
 if __name__ == "__main__":
-    print(json.dumps(run("please generate test of Math Test with Difficulty 1"), indent=2))
+    prompt = input("start Typing Question "
+                   "\n example: please generate test of Math Test with Difficulty 1\n")
+    print(json.dumps(run(prompt), indent=2))
