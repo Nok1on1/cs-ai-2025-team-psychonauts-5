@@ -1,6 +1,6 @@
 {
   "name": "generate_test",
-  "description": "Generate a test session for a given subject and difficulty.",
+  "description": "Deterministic, non-AI generator using a small built-in question bank. Prefer 'generate_test_ai' for AI-synthesized questions; use this only if a deterministic fallback is explicitly desired.",
   "parameters": {
     "type": "object",
     "properties": {

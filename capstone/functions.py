@@ -11,10 +11,12 @@ These are self-contained, use in-memory stores, and are safe for demo/testing.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any, Tuple
 from pydantic import BaseModel, Field, field_validator, model_validator
 from enum import Enum
 import itertools
+import os
+import json
 
 
 class Subject(str, Enum):
@@ -151,6 +153,157 @@ def generate_test(request: TestGenerationRequest) -> TestSession:
     return session
 
 
+def _try_import_gemini() -> Tuple[Optional[Any], str]:
+    """Try to import a Gemini SDK. Returns (module, sdk_kind)."""
+    try:
+        from google import genai as genai_mod  # type: ignore
+        return genai_mod, "genai"
+    except Exception:
+        pass
+    try:
+        import google.generativeai as genai_mod  # type: ignore
+        return genai_mod, "generativeai"
+    except Exception:
+        return None, ""
+
+
+def _extract_text_from_gemini_response(resp: Any) -> Optional[str]:
+    """Best-effort text extraction across SDK variants."""
+    # resp.text on some versions
+    try:
+        t = getattr(resp, "text", None)
+        if t:
+            return t
+    except Exception:
+        pass
+
+    # candidates[0].content.parts[*].text
+    try:
+        candidates = getattr(resp, "candidates", [])
+        if candidates:
+            content = getattr(candidates[0], "content", None)
+            parts = getattr(content, "parts", None) if content else None
+            if parts:
+                chunks: List[str] = []
+                for p in parts:
+                    if hasattr(p, "text"):
+                        chunks.append(getattr(p, "text"))
+                    elif isinstance(p, dict) and "text" in p:
+                        chunks.append(p["text"])
+                if chunks:
+                    return "".join(chunks)
+    except Exception:
+        pass
+
+    # fallback None
+    return None
+
+
+def _gemini_generate_questions(req: TestGenerationRequest) -> Optional[List[Question]]:
+    """Use Gemini to synthesize questions matching our Question schema.
+
+    Returns a list of validated Question objects, or None on failure.
+    """
+    api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+    if not api_key:
+        return None
+
+    genai_mod, sdk_kind = _try_import_gemini()
+    if not genai_mod:
+        return None
+
+    model_name = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+
+    system_inst = os.getenv(
+        "GEMINI_SYSTEM_PROMPT",
+        "You are Dialogos. You create short, clear multiple-choice questions.",
+    )
+
+    instructions = (
+        "Create strictly-formatted JSON for multiple-choice questions.\n"
+        "Return ONLY JSON, no prose.\n\n"
+        "Schema for each question object: {\n"
+        "  'id': string,\n"
+        "  'text': string,\n"
+        "  'choices': array of 2-5 short strings,\n"
+        "  'correct_index': integer index into choices (0-based),\n"
+        "  'subject': 'math' | 'logic',\n"
+        "  'difficulty': 1 | 2 | 3\n"
+        "}.\n\n"
+        "Requirements:\n"
+        f"- subject must be '{req.subject.value}'.\n"
+        f"- difficulty should be {req.difficulty.value}.\n"
+        f"- Generate exactly {req.num_questions} questions.\n"
+        "- Ensure correct_index points to the correct choice.\n"
+        "- Keep questions concise and unambiguous.\n\n"
+        "Output shape: { 'questions': [ {question}, ... ] }"
+    )
+
+    try:
+        if sdk_kind == "genai":
+            client = genai_mod.Client(api_key=api_key)
+            resp = client.responses.generate(
+                model=model_name, input=instructions, system_instruction=system_inst
+            )
+        else:
+            genai_mod.configure(api_key=api_key)
+            model = genai_mod.GenerativeModel(model_name, system_instruction=system_inst)
+            resp = model.generate_content(instructions)
+
+        text = _extract_text_from_gemini_response(resp)
+        if not text:
+            return None
+
+        # Find JSON block
+        data = None
+        try:
+            data = json.loads(text)
+        except Exception:
+            # attempt to find code fence
+            start = text.find("{")
+            end = text.rfind("}")
+            if start != -1 and end != -1 and end > start:
+                data = json.loads(text[start : end + 1])
+        if not isinstance(data, dict) or "questions" not in data or not isinstance(data["questions"], list):
+            return None
+
+        questions: List[Question] = []
+        for i, q in enumerate(data["questions"][: req.num_questions]):  # type: ignore[index]
+            # Ensure an id exists
+            if not isinstance(q, dict):
+                continue
+            q.setdefault("id", _next_id("q_ai"))
+            q.setdefault("subject", req.subject.value)
+            q.setdefault("difficulty", int(req.difficulty.value))
+            try:
+                questions.append(Question.model_validate(q))
+            except Exception:
+                # skip invalid
+                continue
+
+        if not questions:
+            return None
+        return questions[: req.num_questions]
+    except Exception:
+        return None
+
+
+def generate_test_ai(request: TestGenerationRequest) -> TestSession:
+    """Generate a test session with AI-synthesized questions when possible.
+
+    Fallbacks to the deterministic question bank when AI is unavailable or
+    generation fails.
+    """
+    questions = _gemini_generate_questions(request)
+    if not questions:
+        # Fallback to existing deterministic generator
+        return generate_test(request)
+
+    session = TestSession(session_id=_next_id("session"), questions=questions)
+    _SESSIONS[session.session_id] = session
+    return session
+
+
 def grade_test(submission: AnswerSubmission) -> TestResults:
     session = _SESSIONS.get(submission.session_id)
     if not session:
@@ -198,6 +351,7 @@ def generate_socratic_feedback(req: SocraticFeedbackRequest) -> SocraticFeedback
 # Simple registry that could be exposed to an LLM tool system (for demo only)
 FUNCTION_REGISTRY = {
     "generate_test": generate_test,
+    "generate_test_ai": generate_test_ai,
     "grade_test": grade_test,
     "generate_socratic_feedback": generate_socratic_feedback,
 }
