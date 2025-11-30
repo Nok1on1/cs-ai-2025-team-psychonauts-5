@@ -3,7 +3,7 @@
 **Team Name:** psychonauts 5
 **Project Title:** dialogos  
 **Submission Date:** 12/01/2025  
-**Team Members:** G. Mikaberidze, LG. Tskadadze, S. Arabidze, L. Mekoshvili, N. Kvirikashvili
+**Team Members:** G. Mikaberidze, LG. Tskhadadze, S. Arabidze, L. Mekoshvili, N. Kvirikashvili
 
 ## Part A: Week 6 - Function Calling (110 points)
 
