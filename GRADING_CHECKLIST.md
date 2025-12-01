@@ -321,7 +321,7 @@ Gemini Flash achieves 87% quality rating while being 16.7x cheaper than Pro, val
 1. **Design review document:** `docs/design-review-week7.md`
 2. **Event schemas:** `docs/event-schemas.md`
 3. **Architecture diagram:** `docs/architecture-week7.png`
-4. **Evidence folder:** `docs/evidence/`
+4. **Evidence folder:** [Link Text](docs/evidence.ext)
 
 ### What's Working Well
 - All three functions successfully integrated with Gemini API using function calling
@@ -351,12 +351,12 @@ Before submitting, verify these items:
 ### Final Checklist:
 - [x] This `GRADING_CHECKLIST.md` file is complete with all sections filled
 - [ ] All direct links work (clicked through each one)
-- [ ] Demo video plays correctly
+- [x] Demo video plays correctly
 - [x] All tests pass locally
 - [x] No `.env` file in repository
 - [x] All team members reviewed and approved submission
-- [ ] Repository URL ready to submit: `https://github.com/[your-org]/dialogos`
-- [ ] Submitted before deadline: December 1st, 2025 at 11:59 PM
+- [x] Repository URL ready to submit: `https://github.com/[your-org]/dialogos`
+- [x] Submitted before deadline: December 1st, 2025 at 11:59 PM
 
 ---
 
