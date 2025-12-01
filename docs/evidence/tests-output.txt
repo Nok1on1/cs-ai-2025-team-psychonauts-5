@@ -1,1 +1,104 @@
-Placeholder: paste pytest output here after running locally.
+{
+  "session_id": "session_1",
+  "questions": [
+    {
+      "id": "q_math_1",
+      "text": "What is 2 + 2?",
+      "choices": [
+        "3",
+        "4",
+        "5",
+        "22"
+      ],
+      "correct_index": 1,
+      "subject": "math",
+      "difficulty": 1
+    },
+    {
+      "id": "q_math_2",
+      "text": "What is 3 * 3?",
+      "choices": [
+        "6",
+        "7",
+        "8",
+        "9"
+      ],
+      "correct_index": 3,
+      "subject": "math",
+      "difficulty": 1
+    }
+  ]
+}
+{
+  "session_id": "session_6",
+  "questions": [
+    {
+      "id": "MATH001",
+      "text": "A spherical balloon is inflated such that its volume increases at a constant rate of 10 cm\u00b3/s. At what rate is its surface area increasing when the radius is 5 cm? (Surface area S = 4\u03c0r\u00b2, Volume V = (4/3)\u03c0r\u00b3)",
+      "choices": [
+        "4 cm\u00b2/s",
+        "2 cm\u00b2/s",
+        "10 cm\u00b2/s",
+        "8 cm\u00b2/s"
+      ],
+      "correct_index": 0,
+      "subject": "math",
+      "difficulty": 3
+    },
+    {
+      "id": "MATH002",
+      "text": "What are the eigenvalues of the matrix [[2, 1], [1, 2]]?",
+      "choices": [
+        "1, 3",
+        "2, 2",
+        "0, 4",
+        "-1, 3"
+      ],
+      "correct_index": 0,
+      "subject": "math",
+      "difficulty": 3
+    },
+    {
+      "id": "MATH003",
+      "text": "Evaluate the integral \u222e (1/(z(z-1))) dz over the contour |z| = 2, oriented counterclockwise.",
+      "choices": [
+        "2\u03c0i",
+        "0",
+        "-2\u03c0i",
+        "\u03c0i"
+      ],
+      "correct_index": 1,
+      "subject": "math",
+      "difficulty": 3
+    },
+    {
+      "id": "MATH004",
+      "text": "Find the general solution to the differential equation y'' - 4y' + 4y = 0.",
+      "choices": [
+        "y = c\u2081e^(2x) + c\u2082xe^(2x)",
+        "y = c\u2081e^(2x) + c\u2082e^(-2x)",
+        "y = c\u2081cos(2x) + c\u2082sin(2x)",
+        "y = c\u2081e^(x) + c\u2082e^(4x)"
+      ],
+      "correct_index": 0,
+      "subject": "math",
+      "difficulty": 3
+    },
+    {
+      "id": "MATH005",
+      "text": "A bag contains 3 red and 2 blue balls. If two balls are drawn without replacement, what is the probability that they are of different colors?",
+      "choices": [
+        "0.6",
+        "0.3",
+        "0.4",
+        "0.5"
+      ],
+      "correct_index": 0,
+      "subject": "math",
+      "difficulty": 3
+    }
+  ]
+}
+{
+  "text": "Sorry, I can only generate tests for 'math' or 'logic' subjects. I cannot generate a test for 'physics'."
+}
