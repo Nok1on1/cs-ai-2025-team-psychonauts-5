@@ -320,7 +320,7 @@ Gemini Flash achieves 87% quality rating while being 16.7x cheaper than Pro, val
 **Part B (Week 7):**
 1. **Design review document:** [Design review](docs/design-review-week7.md)
 2. **Event schemas:** [Schemas](docs/event-schemas.md)
-3. **Architecture diagram:** [Architecture](docs/architecture-week7.png)
+3. **Architecture diagram:** [Architecture](docs/architecture-week7.md)
 4. **Evidence folder:** [Evidence](/docs/evidence/)
 
 ### What's Working Well
