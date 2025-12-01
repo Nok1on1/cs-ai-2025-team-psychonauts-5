@@ -350,7 +350,7 @@ Before submitting, verify these items:
 
 ### Final Checklist:
 - [x] This `GRADING_CHECKLIST.md` file is complete with all sections filled
-- [ ] All direct links work (clicked through each one)
+- [x] All direct links work (clicked through each one)
 - [x] Demo video plays correctly
 - [x] All tests pass locally
 - [x] No `.env` file in repository
