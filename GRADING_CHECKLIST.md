@@ -312,16 +312,16 @@ Gemini Flash achieves 87% quality rating while being 16.7x cheaper than Pro, val
 ### Quick Access Links (For Grader)
 
 **Part A (Week 6):**
-1. **Main functions:** `capstone/functions.py`
-2. **Test file:** `tests/test_functions.py`
+1. **Main functions:** [Main functions](capstone/functions.py)
+2. **Test file:** [Test](tests/test_functions.py)
 3. **Demo video:** 'https://drive.google.com/file/d/1vZ3MhKPGu2oCebjx2IT-_ySqpOoXvrOq/view?usp=sharing'
-4. **Lab 6 logs folder:** `course-pack/labs/lab-6/`
+4. **Lab 6 logs folder:** [Lab 6 logs](course-pack/labs/lab-6/)
 
 **Part B (Week 7):**
-1. **Design review document:** `docs/design-review-week7.md`
-2. **Event schemas:** `docs/event-schemas.md`
-3. **Architecture diagram:** `docs/architecture-week7.png`
-4. **Evidence folder:** `docs/evidence/`
+1. **Design review document:** [Design review](docs/design-review-week7.md)
+2. **Event schemas:** [Schemas](docs/event-schemas.md)
+3. **Architecture diagram:** [Architecture](docs/architecture-week7.png)
+4. **Evidence folder:** [Evidence](/docs/evidence/)
 
 ### What's Working Well
 - All three functions successfully integrated with Gemini API using function calling
@@ -350,13 +350,13 @@ Before submitting, verify these items:
 
 ### Final Checklist:
 - [x] This `GRADING_CHECKLIST.md` file is complete with all sections filled
-- [ ] All direct links work (clicked through each one)
-- [ ] Demo video plays correctly
+- [x] All direct links work (clicked through each one)
+- [x] Demo video plays correctly
 - [x] All tests pass locally
 - [x] No `.env` file in repository
 - [x] All team members reviewed and approved submission
-- [ ] Repository URL ready to submit: `https://github.com/[your-org]/dialogos`
-- [ ] Submitted before deadline: December 1st, 2025 at 11:59 PM
+- [x] Repository URL ready to submit: `https://github.com/[your-org]/dialogos`
+- [x] Submitted before deadline: December 1st, 2025 at 11:59 PM
 
 ---
 
