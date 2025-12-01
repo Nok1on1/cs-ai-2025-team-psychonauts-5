@@ -321,7 +321,7 @@ Gemini Flash achieves 87% quality rating while being 16.7x cheaper than Pro, val
 1. **Design review document:** `docs/design-review-week7.md`
 2. **Event schemas:** `docs/event-schemas.md`
 3. **Architecture diagram:** `docs/architecture-week7.png`
-4. **Evidence folder:** [Link Text](docs/evidence.ext)
+4. **Evidence folder:** [View all evidence files](/docs/evidence/)
 
 ### What's Working Well
 - All three functions successfully integrated with Gemini API using function calling
