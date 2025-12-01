@@ -63,8 +63,8 @@ All three functions fully implemented and tested with Gemini API integration. Hy
 - Command used: `python -m pytest tests/test_functions.py -v`
 
 #### Demo Video (10 points)
-- [ ] **Video Link:** [YouTube/Google Drive URL - TO BE ADDED]
-- [ ] **Video Duration:** [4 minutes, 30 seconds]
+- [ ] **Video Link:** https://drive.google.com/file/d/1vZ3MhKPGu2oCebjx2IT-_ySqpOoXvrOq/view?usp=sharing
+- [ ] **Video Duration:** [2 minutes, 5 seconds]
 - [x] **Video Shows:**
   - ✅ System running
   - ✅ User asking questions
@@ -314,7 +314,7 @@ Gemini Flash achieves 87% quality rating while being 16.7x cheaper than Pro, val
 **Part A (Week 6):**
 1. **Main functions:** `capstone/functions.py`
 2. **Test file:** `tests/test_functions.py`
-3. **Demo video:** [TO BE ADDED]
+3. **Demo video:** 'https://drive.google.com/file/d/1vZ3MhKPGu2oCebjx2IT-_ySqpOoXvrOq/view?usp=sharing'
 4. **Lab 6 logs folder:** `course-pack/labs/lab-6/`
 
 **Part B (Week 7):**
@@ -366,7 +366,7 @@ Before submitting, verify these items:
 
 ---
 
-**Submission Timestamp:** [Will be recorded upon submission]  
+**Submission Timestamp:** 01/12/2025 
 
 **Submitted By:** Lasha Giorgi Tskhadadze 
 
