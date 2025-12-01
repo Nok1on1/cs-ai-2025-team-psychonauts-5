@@ -312,16 +312,16 @@ Gemini Flash achieves 87% quality rating while being 16.7x cheaper than Pro, val
 ### Quick Access Links (For Grader)
 
 **Part A (Week 6):**
-1. **Main functions:** `capstone/functions.py`
-2. **Test file:** `tests/test_functions.py`
+1. **Main functions:** [Main functions](capstone/functions.py)
+2. **Test file:** [Test](tests/test_functions.py)
 3. **Demo video:** 'https://drive.google.com/file/d/1vZ3MhKPGu2oCebjx2IT-_ySqpOoXvrOq/view?usp=sharing'
-4. **Lab 6 logs folder:** `course-pack/labs/lab-6/`
+4. **Lab 6 logs folder:** [Lab 6 logs](course-pack/labs/lab-6/)
 
 **Part B (Week 7):**
-1. **Design review document:** `docs/design-review-week7.md`
-2. **Event schemas:** `docs/event-schemas.md`
-3. **Architecture diagram:** `docs/architecture-week7.png`
-4. **Evidence folder:** [View all evidence files](/docs/evidence/)
+1. **Design review document:** [Design review](docs/design-review-week7.md)
+2. **Event schemas:** [Schemas](docs/event-schemas.md)
+3. **Architecture diagram:** [Architecture](docs/architecture-week7.png)
+4. **Evidence folder:** [Evidence](/docs/evidence/)
 
 ### What's Working Well
 - All three functions successfully integrated with Gemini API using function calling
