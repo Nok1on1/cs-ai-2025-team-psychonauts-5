@@ -130,40 +130,40 @@ We initially underestimated prompt engineering complexity. Generating pedagogica
 
 ```
                  ┌──────────────────────┐
-                 │   Student User        │
-                 │   (Browser: Desktop   │
-                 │    or Mobile Web)     │
-                 └──────────┬────────────┘
+                 │   Student User       │
+                 │   (Browser: Desktop  │
+                 │    or Mobile Web)    │
+                 └──────────┬───────────┘
                             │ HTTPS
                             ▼
                  ┌──────────────────────┐
-                 │   React Frontend      │
-                 │   (Vite build)        │
-                 │   React Router,       │
-                 │   Tailwind CSS        │
-                 │   Deployed: Vercel    │
-                 └──────────┬────────────┘
+                 │   React Frontend     │
+                 │   (Vite build)       │
+                 │   React Router,      │
+                 │   Tailwind CSS       │
+                 │   Deployed: Vercel   │
+                 └──────────┬───────────┘
                             │ REST API (JSON)
                             ▼
                  ┌──────────────────────┐
-                 │   Express Backend     │
-                 │   (Node.js + JWT)     │
-                 │   Hosted: Azure       │
-                 │   App Service         │
-                 └─────┬──────────┬──────┘
+                 │   Express Backend    │
+                 │   (Node.js + JWT)    │
+                 │   Hosted: Azure      │
+                 │   App Service        │
+                 └─────┬──────────┬─────┘
                        │          │
             ┌──────────┘          └───────────┐
             ▼                                 ▼
-   ┌─────────────────┐           ┌──────────────────────┐
-   │   MSSQL DB       │           │  Gemini API          │
-   │   (Azure)        │           │  (Google)            │
-   │                  │           │                      │
-   │   Tables:        │           │  Models:             │
-   │   - Users        │           │  - gemini-1.5-flash  │
-   │   - Tests        │           │    (80%, fast+cheap) │
-   │   - Responses    │           │  - gemini-1.5-pro    │
-   │   - Performance  │           │    (20%, complex)    │
-   └─────────────────┘           │                      │
+   ┌─────────────────┐            ┌──────────────────────┐
+   │   MSSQL DB      │            │  Gemini API          │
+   │   (Azure)       │            │  (Google)            │
+   │                 │            │                      │
+   │   Tables:       │            │  Models:             │
+   │   - Users       │            │  - gemini-1.5-flash  │
+   │   - Tests       │            │    (80%, fast+cheap) │
+   │   - Responses   │            │  - gemini-1.5-pro    │
+   │   - Performance │            │    (20%, complex)    │
+   └─────────────────┘            │                      │
                                   │  Functions:          │
                                   │  - Question gen      │
                                   │  - Feedback gen      │
