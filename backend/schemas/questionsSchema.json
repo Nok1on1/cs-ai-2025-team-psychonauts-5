@@ -1,0 +1,27 @@
+{
+  "type": "OBJECT",
+  "properties": {
+    "questions": {
+      "type": "ARRAY",
+      "items": {
+        "type": "OBJECT",
+        "properties": {
+          "id": { "type": "STRING" },
+          "text": { "type": "STRING" },
+          "choices": {
+            "type": "ARRAY",
+            "items": { "type": "STRING" }
+          },
+          "correct_index": { "type": "INTEGER" },
+          "subject": {
+            "type": "STRING",
+            "enum": ["math", "logic"]
+          },
+          "difficulty": { "type": "INTEGER" }
+        },
+        "required": ["id", "text", "choices", "correct_index", "subject", "difficulty"]
+      }
+    }
+  },
+  "required": ["questions"]
+}
