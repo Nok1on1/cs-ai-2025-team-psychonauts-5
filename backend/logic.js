@@ -1,5 +1,6 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const crypto = require('crypto');
+require('dotenv').config();
 
 const _SESSIONS = new Map();
 const SESSION_TTL = 1000 * 60 * 60; // 1 hour
@@ -59,7 +60,7 @@ function generate_test(request) {
 }
 
 async function _gemini_generate_questions(req) {
-  const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     console.log("[INFO] No Gemini API key found, will use fallback");
     return null;
@@ -67,7 +68,7 @@ async function _gemini_generate_questions(req) {
 
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     const instructions = `
       Create strictly-formatted JSON for multiple-choice questions.
