@@ -167,18 +167,38 @@ function grade_test(submission) {
     };
 }
 
-function generate_socratic_feedback(req) {
+async function generate_socratic_feedback(req) {
     const {question, selected_index} = req;
-    const q = question;
-    let msg;
-    if (selected_index === q.correct_index) {
-        msg = "Great job! You chose the correct answer. Can you explain why it is correct in your own words?";
-    } else {
-        const chosen = q.choices[selected_index] || "(invalid choice)";
-        const correct = q.choices[q.correct_index];
-        msg = `Let's reflect. You chose '${chosen}'. What evidence in the question text supports that choice? Now compare it to the correct reasoning that leads to '${correct}'. Which assumption might have misled you?`;
+    const socraticSystemInstruction = `
+  You are a Socratic Tutor. Your goal is to help students discover answers themselves.
+  
+  RULES:
+  1. NEVER give the direct answer, even if the student asks for it.
+  2. If a student is wrong, do not say "You are wrong." Ask a question that reveals the contradiction.
+  3. Provide "nudges" rather than steps.
+  4. Use the following question types:
+     - Clarification: "What do you mean by...?"
+     - Probing Assumptions: "Why do you think that applies here?"
+     - Probing Evidence: "What part of the problem leads you to that number?"
+  5. Keep responses short (1-2 questions at a time).
+`;
+    const questionParsed = "question:" + question.text + ". choices:" + question.choices.toString()
+
+    const context = "this is the question with answers:" + questionParsed + " and user selected the index" + selected_index
+
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+        console.log("[INFO] No Gemini API key found, will use fallback");
+        return null;
     }
-    return {question_id: q.id, message: msg};
+
+
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({
+        model: "gemini-2.5-flash"
+    });
+    const response = await model.generateContent(socraticSystemInstruction + "\n" + context);
+    return response.response.text();
 }
 
 setInterval(() => {
