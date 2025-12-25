@@ -5,3 +5,5 @@ const router = require("express").Router()
 router.route("/recentTests").get(recentTests)
 
 router.route("/insertTest").post(insertTest)
+
+module.exports = router;
