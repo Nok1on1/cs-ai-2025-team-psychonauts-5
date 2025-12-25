@@ -1,4 +1,4 @@
-const checkDuplicate = require("../middleware/verifyAuthorization");
+const {checkDuplicate} = require("../middleware/verifyAuthorization");
 const {signUp, signIn} = require("../controllers/authorizationControllers");
 const router = require("express").Router()
 

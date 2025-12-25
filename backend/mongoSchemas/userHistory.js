@@ -39,7 +39,6 @@ historySchema.pre("save", function (next) {
     this.scorePercent = Math.round(
         (this.correct / this.total_questions) * 100
     );
-    next();
 });
 
 module.exports = mongoose.model("user_history", historySchema);

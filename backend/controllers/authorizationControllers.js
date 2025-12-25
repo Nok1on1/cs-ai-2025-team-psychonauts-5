@@ -5,76 +5,101 @@ const User = require("../mongoSchemas/user");
 require('dotenv').config();
 
 const signUp = async (req, res) => {
-    const {name, email, password} = req.body;
-    let user;
     try {
-        user = await User.create({
-            name: name,
-            email: email,
-            password: bcrypt.hashSync(password, 8),
+        const { name, email, password } = req.body;
+
+        // Validate input
+        if (!name || !email || !password) {
+            return res.status(400).json({ message: "Name, email, and password are required" });
+        }
+
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!re.test(email)) {
+            return res.status(400).json({ message: "Invalid email address" });
+        }
+
+        // Check if email already exists
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(409).json({ message: "Email already in use" });
+        }
+
+        // Create user
+        const hashedPassword = bcrypt.hashSync(password, 8);
+        const user = await User.create({
+            name,
+            email,
+            password: hashedPassword,
             role: "student",
         });
 
-    } catch (error) {
-        await User.findByIdAndDelete(user._id).exec();
-        console.log(error);
-        res
-            .status(500)
-            .json({message: "Something went wrong in signUp", err: error});
+        // Sign JWT
+        const token = jwt.sign({ id: user._id }, config.secret, {
+            expiresIn: config.jwtExpiration,
+        });
+
+        // Set cookie
+        res.cookie("x-access-token", token, {
+            httpOnly: true,
+            sameSite: "Lax",
+            secure: false, // true in production with HTTPS
+            maxAge: config.jwtExpiration * 1000,
+        });
+
+        // Return user info (no password!)
+        return res.status(201).json({
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            accessToken: token
+        });
+
+    } catch (err) {
+        console.error("SignUp error:", err);
+        return res.status(500).json({ message: "Internal server error" });
     }
-
-    let token = jwt.sign({id: user._id}, config.secret, {
-        expiresIn: config.jwtExpiration,
-    });
-
-    res.cookie("x-access-token", token, {
-        httpOnly: true,
-        sameSite: "Lax",
-        secure: false,
-        maxAge: config.jwtExpiration * 1000,
-    }).status(200).json({id: user._id, name, email, password, accessToken: token});
 };
 
 const signIn = async (req, res) => {
-    const {email, password} = req.body;
+    try {
+        const { email, password } = req.body;
 
-    const foundUser = await User.findOne({
-        email: email,
-    }).exec();
+        if (!email || !password) {
+            return res.status(400).json({ message: "Email and password are required" });
+        }
 
-    if (!foundUser) return res.status(404).json({message: "User Not Found!"});
+        const user = await User.findOne({ email });
+        if (!user) return res.status(404).json({ message: "User not found" });
 
-    var passwordIsValid = bcrypt.compareSync(password, foundUser.password);
+        const passwordIsValid = bcrypt.compareSync(password, user.password);
+        if (!passwordIsValid) {
+            return res.status(401).json({ message: "Invalid password" });
+        }
 
-    if (!passwordIsValid) {
-        return res.status(401).send({
-            accessToken: null,
-            message: "Invalid Password!",
+        const token = jwt.sign({ id: user._id }, config.secret, {
+            expiresIn: config.jwtExpiration,
         });
-    }
 
-    let token = jwt.sign({id: foundUser._id}, config.secret, {
-        expiresIn: config.jwtExpiration,
-    });
-
-    let authority = "ROLE_" + foundUser.role;
-
-    res
-        .cookie("x-access-token", token, {
+        res.cookie("x-access-token", token, {
             httpOnly: true,
             sameSite: "Lax",
-            secure: false,
+            secure: false, // true in production
             maxAge: config.jwtExpiration * 1000,
-        })
-        .status(200)
-        .json({
-            message: "Logged in",
-            id: foundUser._id,
-            name: foundUser.name,
-            email: foundUser.email,
-            role: authority,
-            accessToken: token,
         });
+
+        return res.status(200).json({
+            message: "Logged in",
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            role: "ROLE_" + user.role,
+            accessToken: token
+        });
+
+    } catch (err) {
+        console.error("SignIn error:", err);
+        return res.status(500).json({ message: "Internal server error" });
+    }
 };
 
 module.exports = {signUp, signIn};

@@ -1,15 +1,10 @@
 const jwt = require("jsonwebtoken");
 const UserHistory = require("../mongoSchemas/userHistory");
+const User = require("../mongoSchemas/user");
 
 const recentTests = async (req, res) => {
     try {
-        const token = req.cookies["x-access-token"];
-        if (!token) return res.status(401).json({message: "No token"});
-
-        const payload = jwt.verify(token, process.env.JWT_SECRET);
-        console.log("JWT payload:", payload);
-        console.log("Email from payload:", payload.email);
-        const email = payload.email;
+        const email = req.user.email;
 
         const history = await UserHistory.find({email})
             .sort({createdAt: -1})
@@ -23,11 +18,7 @@ const recentTests = async (req, res) => {
 
 const insertTest = async (req, res) => {
     try {
-        const token = req.cookies["x-access-token"];
-        if (!token) return res.status(401).json({message: "No token"});
-
-        const payload = jwt.verify(token, process.env.JWT_SECRET);
-        const email = payload.email;
+        const email = req.user.email;
 
         const {subject, difficulty, correct, total_questions} = req.body;
 
