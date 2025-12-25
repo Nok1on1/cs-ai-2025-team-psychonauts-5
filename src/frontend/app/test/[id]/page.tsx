@@ -23,6 +23,7 @@ interface Question {
   subject: string
   difficulty: number
   topic?: string
+  explanation?: string
   source_document?: string
   source_page?: number
 }
@@ -203,7 +204,7 @@ export default function TestPage() {
               if (feedbackResponse.ok) {
                 const feedbackData = await feedbackResponse.json()
                 console.log(`Feedback data for question ${index + 1}:`, feedbackData)
-                socraticFeedback = feedbackData
+                socraticFeedback = feedbackData.feedback || feedbackData.socratic_feedback || "Review the concept and try to understand why this answer is correct."
               } else {
                 const errorText = await feedbackResponse.text()
                 console.error(`Failed to generate feedback for question ${index + 1}. Status: ${feedbackResponse.status}, Response:`, errorText)
@@ -221,6 +222,7 @@ export default function TestPage() {
             correctAnswer: question.choices[question.correct_index],
             correct: isCorrect,
             socraticFeedback: socraticFeedback,
+            fullExplanation: question.explanation || "The correct answer demonstrates the key principle of this topic.",
             source: {
               document: question.source_document || "Curriculum materials",
               page: question.source_page || 0,
@@ -359,7 +361,19 @@ export default function TestPage() {
                   )}
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
+                {/* Context Section */}
+                {currentQuestion.context && (
+                  <Alert className="bg-accent/30 border-accent">
+                    <FileText className="h-4 w-4" />
+                    <AlertDescription>
+                      <p className="font-semibold text-sm mb-2">Context:</p>
+                      <p className="text-sm leading-relaxed whitespace-pre-wrap">{currentQuestion.context}</p>
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                {/* Answer Choices */}
                 <RadioGroup 
                   value={answers[currentQuestionIndex]?.toString() || ""} 
                   onValueChange={handleSelectAnswer}
