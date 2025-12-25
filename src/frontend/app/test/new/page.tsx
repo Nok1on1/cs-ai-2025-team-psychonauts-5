@@ -9,15 +9,17 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Slider } from "@/components/ui/slider"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { mockApi } from "@/lib/mock-api"
 import { useAuthStore } from "@/lib/auth-store"
-import { Loader2, BookOpen, Target, ListOrdered } from "lucide-react"
+import { Loader2, BookOpen, Target, ListOrdered, AlertCircle } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
 const SUBJECTS = ["Math", "English", "Georgian"] as const
 const QUESTION_COUNTS = [5, 10, 15, 20] as const
 
 const DIFFICULTY_LABELS = ["Very Easy", "Easy", "Medium", "Hard", "Very Hard"]
 const DIFFICULTY_COLORS = ["text-green-600", "text-green-500", "text-yellow-600", "text-orange-600", "text-red-600"]
+
+const API_BASE_URL = "http://localhost:8000"
 
 export default function NewTestPage() {
   console.log("[v0] NewTestPage component rendering")
@@ -28,6 +30,7 @@ export default function NewTestPage() {
   const [difficulty, setDifficulty] = useState<number>(3)
   const [numQuestions, setNumQuestions] = useState<number>(10)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   console.log("[v0] NewTestPage - user:", user)
 
@@ -35,17 +38,55 @@ export default function NewTestPage() {
     if (!user) return
 
     setLoading(true)
+    setError(null)
 
     try {
-      const response = await mockApi.generateTest(user.id, {
-        subject,
-        difficulty,
-        numQuestions: numQuestions as 5 | 10 | 15 | 20,
+      const response = await fetch(`${API_BASE_URL}/api/tests`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          subject: subject,
+          difficulty: difficulty,
+          num_questions: numQuestions,
+        }),
       })
 
-      router.push(`/test/${response.testId}`)
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.detail || `Failed to generate test: ${response.statusText}`)
+      }
+
+      const data = await response.json()
+      
+      // The API returns session_id, questions, and expires
+      const sessionId = data.session_id
+      
+      if (!sessionId) {
+        console.error("[ERROR] Full response data:", JSON.stringify(data, null, 2))
+        throw new Error("Session ID not found in response")
+      }
+
+      if (!data.questions || data.questions.length === 0) {
+        throw new Error("No questions were generated")
+      }
+
+      console.log("[INFO] Test generated successfully with", data.questions.length, "questions")
+      
+      // Store the test data in sessionStorage for the test page to use
+      sessionStorage.setItem(`test_${sessionId}`, JSON.stringify({
+        sessionId: sessionId,
+        questions: data.questions,
+        subject: subject,
+        difficulty: difficulty,
+        expires: data.expires
+      }))
+      
+      router.push(`/test/${sessionId}`)
     } catch (error) {
       console.error("Failed to generate test:", error)
+      setError(error instanceof Error ? error.message : "Failed to generate test. Please try again.")
       setLoading(false)
     }
   }
@@ -62,6 +103,13 @@ export default function NewTestPage() {
               Configure your personalized test. Our AI will generate questions based on your settings.
             </p>
           </div>
+
+          {error && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
 
           <Card>
             <CardHeader>

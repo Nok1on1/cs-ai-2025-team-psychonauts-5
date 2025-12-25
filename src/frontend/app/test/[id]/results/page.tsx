@@ -9,10 +9,20 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { mockDatabase } from "@/lib/mock-database"
-import type { TestResult } from "@/lib/mock-api"
 import { CheckCircle2, XCircle, Lightbulb, FileText, TrendingUp, BookOpen, Home } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
+
+interface TestResult {
+  questionIndex: number
+  userAnswer: string
+  correctAnswer: string
+  correct: boolean
+  socraticFeedback: string
+  source: {
+    document: string
+    page: number
+  }
+}
 
 interface ResultsData {
   score: string
@@ -25,36 +35,59 @@ interface ResultsData {
   }
 }
 
+interface Question {
+  id: string
+  text: string
+  choices: string[]
+  correct_index: number
+  subject: string
+  difficulty: number
+  topic?: string
+  source_document?: string
+  source_page?: number
+}
+
+interface TestData {
+  sessionId: string
+  questions: Question[]
+  subject: string
+  difficulty: number
+  expires: number
+}
+
 export default function ResultsPage() {
   const router = useRouter()
   const params = useParams()
-  const testId = params?.id as string
+  const sessionId = params?.id as string
 
-  const [test, setTest] = useState<any>(null)
+  const [testData, setTestData] = useState<TestData | null>(null)
   const [resultsData, setResultsData] = useState<ResultsData | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const testData = mockDatabase.tests.find((t) => t.testId === testId)
-    if (!testData) {
+    // Load test data from sessionStorage
+    const storedTestData = sessionStorage.getItem(`test_${sessionId}`)
+    if (!storedTestData) {
+      console.error("Test data not found in sessionStorage")
       router.push("/dashboard")
       return
     }
 
-    setTest(testData)
+    const testDataParsed: TestData = JSON.parse(storedTestData)
+    setTestData(testDataParsed)
 
-    // Get the graded results (stored after submission)
-    const storedResults = localStorage.getItem(`test_results_${testId}`)
-    if (storedResults) {
-      setResultsData(JSON.parse(storedResults))
-    } else {
-      // If no results stored, redirect back
+    // Get the graded results from localStorage
+    const storedResults = localStorage.getItem(`test_results_${sessionId}`)
+    if (!storedResults) {
+      console.error("Results not found in localStorage")
       router.push("/dashboard")
       return
     }
 
+    const resultsParsed: ResultsData = JSON.parse(storedResults)
+    setResultsData(resultsParsed)
     setLoading(false)
-  }, [testId, router])
+  }, [sessionId, router])
 
   if (loading) {
     return (
@@ -71,12 +104,15 @@ export default function ResultsPage() {
     )
   }
 
-  if (!resultsData || !test) {
+  if (!resultsData || !testData) {
     return (
       <ProtectedRoute>
         <DashboardLayout>
           <div className="text-center py-12">
             <p className="text-muted-foreground">No results found</p>
+            <Button onClick={() => router.push("/dashboard")} className="mt-4">
+              Back to Dashboard
+            </Button>
           </div>
         </DashboardLayout>
       </ProtectedRoute>
@@ -102,17 +138,17 @@ export default function ResultsPage() {
                 </div>
                 <div>
                   <h1 className="text-4xl font-bold mb-2">
-                    {correctCount} out of {test.questions.length} correct!
+                    {correctCount} out of {testData.questions.length} correct!
                   </h1>
                   <p className="text-xl text-muted-foreground">{resultsData.accuracy}% accuracy</p>
                 </div>
                 <Progress value={resultsData.accuracy} className="h-3 max-w-md mx-auto" />
                 <div className="flex items-center justify-center gap-4 pt-2">
                   <Badge variant="outline" className="text-base py-1 px-3">
-                    {test.subject}
+                    {testData.subject}
                   </Badge>
                   <Badge variant="outline" className="text-base py-1 px-3">
-                    Difficulty Level {test.difficulty}
+                    Difficulty Level {testData.difficulty}
                   </Badge>
                 </div>
               </div>
@@ -149,15 +185,9 @@ export default function ResultsPage() {
             </CardHeader>
             <CardContent>
               <Accordion type="single" collapsible className="w-full">
-                {test.questions.map((question: any, index: number) => {
+                {testData.questions.map((question: Question, index: number) => {
                   const result = resultsData.results[index]
                   const isCorrect = result.correct
-
-                  const userAnswerText =
-                    question.options.find((opt: string) => opt.startsWith(result.userAnswer)) || result.userAnswer
-
-                  const correctAnswerText =
-                    question.options.find((opt: string) => opt.startsWith(result.correctAnswer)) || result.correctAnswer
 
                   return (
                     <AccordionItem key={index} value={`question-${index}`} className="border rounded-lg mb-3 px-4">
@@ -172,7 +202,7 @@ export default function ResultsPage() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="font-medium text-sm">Question {index + 1}</p>
-                            <p className="text-sm text-muted-foreground line-clamp-2">{question.question}</p>
+                            <p className="text-sm text-muted-foreground line-clamp-2">{question.text}</p>
                           </div>
                         </div>
                       </AccordionTrigger>
@@ -180,9 +210,9 @@ export default function ResultsPage() {
                         {/* Question */}
                         <div className="space-y-2">
                           <Badge variant="secondary" className="mb-2">
-                            {question.topic}
+                            {question.topic || question.subject}
                           </Badge>
-                          <p className="font-medium leading-relaxed">{question.question}</p>
+                          <p className="font-medium leading-relaxed">{question.text}</p>
                         </div>
 
                         {/* Answer Comparison */}
@@ -194,13 +224,13 @@ export default function ResultsPage() {
                                 isCorrect ? "border-green-600 bg-green-50" : "border-red-600 bg-red-50"
                               }`}
                             >
-                              <p className="text-sm font-medium">{userAnswerText}</p>
+                              <p className="text-sm font-medium">{result.userAnswer || "Not answered"}</p>
                             </div>
                           </div>
                           <div className="space-y-1">
                             <p className="text-sm font-medium text-muted-foreground">Correct Answer</p>
                             <div className="p-3 rounded-lg border-2 border-green-600 bg-green-50">
-                              <p className="text-sm font-medium">{correctAnswerText}</p>
+                              <p className="text-sm font-medium">{result.correctAnswer}</p>
                             </div>
                           </div>
                         </div>
@@ -216,19 +246,17 @@ export default function ResultsPage() {
                           </Alert>
                         )}
 
-                        {/* Explanation */}
-                        <div className="bg-accent/30 p-4 rounded-lg space-y-2">
-                          <p className="font-semibold text-sm">Explanation:</p>
-                          <p className="text-sm leading-relaxed">{result.fullExplanation}</p>
-                        </div>
-
+              
                         {/* Source */}
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <FileText className="h-3 w-3" />
-                          <span>
-                            Source: {result.source.document}, Page {result.source.page}
-                          </span>
-                        </div>
+                        {result.source && result.source.document && (
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <FileText className="h-3 w-3" />
+                            <span>
+                              Source: {result.source.document}
+                              {result.source.page > 0 && `, Page ${result.source.page}`}
+                            </span>
+                          </div>
+                        )}
                       </AccordionContent>
                     </AccordionItem>
                   )
