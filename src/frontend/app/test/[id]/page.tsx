@@ -119,22 +119,36 @@ export default function TestPage() {
       const savedHistory = await response.json()
       console.log("Test saved successfully:", savedHistory)
 
-      // Store results for the results page
+      // Store results for the results page in the format it expects
       const results = {
-        testId,
-        subject: testMetadata.subject,
-        difficulty: testMetadata.difficulty,
-        correct: correctAnswers,
-        total: totalQuestions,
-        scorePercent: savedHistory.scorePercent,
-        answers: questions.map((question, index) => ({
-          question: question.question,
-          userAnswer: answers[index] || "",
-          correctAnswer: question.correct_answer,
-          isCorrect: answers[index] === question.correct_answer,
-          options: question.options,
-          topic: question.topic,
-        })),
+        score: `${correctAnswers}/${totalQuestions}`,
+        accuracy: savedHistory.scorePercent,
+        results: questions.map((question, index) => {
+          const userAnswer = answers[index] || ""
+          const isCorrect = userAnswer === question.correct_answer
+          
+          return {
+            questionIndex: index,
+            userAnswer: userAnswer,
+            correctAnswer: question.correct_answer,
+            correct: isCorrect,
+            socraticFeedback: question.socratic_feedback || "Review the concept and try to understand why this answer is correct.",
+            fullExplanation: question.explanation || "The correct answer demonstrates the key principle of this topic.",
+            source: {
+              document: question.source_document,
+              page: question.source_page,
+            },
+          }
+        }),
+        recommendations: {
+          nextDifficulty: savedHistory.scorePercent >= 80 ? testMetadata.difficulty + 1 : testMetadata.difficulty,
+          weakTopics: questions
+            .filter((q, i) => answers[i] !== q.correct_answer)
+            .map(q => q.topic)
+            .filter((topic, index, self) => self.indexOf(topic) === index)
+            .slice(0, 3),
+          studyMaterials: [],
+        },
       }
 
       localStorage.setItem(`test_results_${testId}`, JSON.stringify(results))
