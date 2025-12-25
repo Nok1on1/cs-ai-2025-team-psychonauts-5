@@ -8,9 +8,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { AccuracyChart } from "@/components/accuracy-chart"
 import { TopicPerformanceChart } from "@/components/topic-performance-chart"
-import { mockApi } from "@/lib/mock-api"
 import { useAuthStore } from "@/lib/auth-store"
 import { Loader2, TrendingUp, Target, BookOpen, Plus } from "lucide-react"
+
+interface TestHistory {
+  _id: string
+  email: string
+  subject: string
+  difficulty: number
+  correct: number
+  total_questions: number
+  scorePercent: number
+  createdAt: string
+}
 
 interface DashboardData {
   user: {
@@ -21,6 +31,7 @@ interface DashboardData {
   accuracyTrend: Array<{ date: string; accuracy: number }>
   topicPerformance: Array<{ topic: string; accuracy: number; totalQuestions: number }>
   recentTests: Array<{ date: string; subject: string; score: string; difficulty: number }>
+  improvementPercent: number
 }
 
 export default function DashboardPage() {
@@ -28,6 +39,7 @@ export default function DashboardPage() {
   const user = useAuthStore((state) => state.user)
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   const handleNewTest = () => {
     console.log("[v0] Dashboard - New Test button clicked")
@@ -36,15 +48,112 @@ export default function DashboardPage() {
     console.log("[v0] Dashboard - router.push called")
   }
 
+  const calculateDashboardData = (tests: TestHistory[]): DashboardData => {
+    if (tests.length === 0) {
+      return {
+        user: {
+          name: user?.name || "Student",
+          totalTests: 0,
+          averageAccuracy: 0,
+        },
+        accuracyTrend: [],
+        topicPerformance: [],
+        recentTests: [],
+        improvementPercent: 0,
+      }
+    }
+
+    // Calculate average accuracy
+    const totalAccuracy = tests.reduce((sum, test) => sum + test.scorePercent, 0)
+    const averageAccuracy = Math.round(totalAccuracy / tests.length)
+
+    // Calculate accuracy trend (last 10 tests)
+    const trendTests = tests.slice(0, 10).reverse()
+    const accuracyTrend = trendTests.map((test) => ({
+      date: new Date(test.createdAt).toISOString().split("T")[0],
+      accuracy: test.scorePercent,
+    }))
+
+    // Calculate topic performance
+    const topicMap = new Map<string, { totalCorrect: number; totalQuestions: number }>()
+    
+    tests.forEach((test) => {
+      const existing = topicMap.get(test.subject) || { totalCorrect: 0, totalQuestions: 0 }
+      topicMap.set(test.subject, {
+        totalCorrect: existing.totalCorrect + test.correct,
+        totalQuestions: existing.totalQuestions + test.total_questions,
+      })
+    })
+
+    const topicPerformance = Array.from(topicMap.entries()).map(([topic, stats]) => ({
+      topic,
+      accuracy: Math.round((stats.totalCorrect / stats.totalQuestions) * 100),
+      totalQuestions: stats.totalQuestions,
+    }))
+
+    // Calculate improvement (compare last 3 tests vs previous 3 tests)
+    let improvementPercent = 0
+    if (tests.length >= 6) {
+      const recentThree = tests.slice(0, 3)
+      const previousThree = tests.slice(3, 6)
+      
+      const recentAvg = recentThree.reduce((sum, t) => sum + t.scorePercent, 0) / 3
+      const previousAvg = previousThree.reduce((sum, t) => sum + t.scorePercent, 0) / 3
+      
+      improvementPercent = Math.round(recentAvg - previousAvg)
+    } else if (tests.length >= 2) {
+      // If less than 6 tests, compare last test vs average of all previous
+      const lastTest = tests[0]
+      const previousTests = tests.slice(1)
+      const previousAvg = previousTests.reduce((sum, t) => sum + t.scorePercent, 0) / previousTests.length
+      
+      improvementPercent = Math.round(lastTest.scorePercent - previousAvg)
+    }
+
+    // Format recent tests
+    const recentTests = tests.slice(0, 5).map((test) => ({
+      date: new Date(test.createdAt).toLocaleDateString(),
+      subject: test.subject,
+      score: `${test.correct}/${test.total_questions}`,
+      difficulty: test.difficulty,
+    }))
+
+    return {
+      user: {
+        name: user?.name || "Student",
+        totalTests: tests.length,
+        averageAccuracy,
+      },
+      accuracyTrend,
+      topicPerformance,
+      recentTests,
+      improvementPercent,
+    }
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       if (!user) return
 
       try {
-        const dashboardData = await mockApi.getDashboard(user.id)
+        setLoading(true)
+        setError(null)
+
+        const response = await fetch("http://localhost:8000/api/dashboard/recentTests", {
+          method: "GET",
+          credentials: "include", 
+        })
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch dashboard data")
+        }
+
+        const tests: TestHistory[] = await response.json()
+        const dashboardData = calculateDashboardData(tests)
         setData(dashboardData)
       } catch (error) {
         console.error("Failed to fetch dashboard data:", error)
+        setError(error instanceof Error ? error.message : "An error occurred")
       } finally {
         setLoading(false)
       }
@@ -65,12 +174,15 @@ export default function DashboardPage() {
     )
   }
 
-  if (!data) {
+  if (error || !data) {
     return (
       <ProtectedRoute>
         <DashboardLayout>
           <div className="text-center py-12">
-            <p className="text-muted-foreground">Failed to load dashboard data</p>
+            <p className="text-muted-foreground">{error || "Failed to load dashboard data"}</p>
+            <Button onClick={() => window.location.reload()} className="mt-4">
+              Retry
+            </Button>
           </div>
         </DashboardLayout>
       </ProtectedRoute>
@@ -119,38 +231,46 @@ export default function DashboardPage() {
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Improvement</CardTitle>
+                <CardTitle className="text-sm font-medium">Recent Progress</CardTitle>
                 <TrendingUp className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-green-600">+8%</div>
-                <p className="text-xs text-muted-foreground mt-1">From last week</p>
+                <div className={`text-2xl font-bold ${data.improvementPercent >= 0 ? "text-green-600" : "text-red-600"}`}>
+                  {data.improvementPercent >= 0 ? "+" : ""}{data.improvementPercent}%
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {data.user.totalTests < 2 ? "Complete more tests" : "vs previous average"}
+                </p>
               </CardContent>
             </Card>
           </div>
 
           {/* Charts */}
-          <div className="grid gap-6 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Accuracy Trend</CardTitle>
-                <CardDescription>Your performance over the last 10 tests</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <AccuracyChart data={data.accuracyTrend} />
-              </CardContent>
-            </Card>
+          {data.accuracyTrend.length > 0 && (
+            <div className="grid gap-6 md:grid-cols-2">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Accuracy Trend</CardTitle>
+                  <CardDescription>Your performance over recent tests</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <AccuracyChart data={data.accuracyTrend} />
+                </CardContent>
+              </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Topic Performance</CardTitle>
-                <CardDescription>How you're doing in different topics</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <TopicPerformanceChart data={data.topicPerformance} />
-              </CardContent>
-            </Card>
-          </div>
+              {data.topicPerformance.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Topic Performance</CardTitle>
+                    <CardDescription>How you're doing in different topics</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <TopicPerformanceChart data={data.topicPerformance} />
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          )}
 
           {/* Recent Tests */}
           <Card>
@@ -180,7 +300,7 @@ export default function DashboardPage() {
                       <div className="flex items-center gap-4">
                         <div className="text-right">
                           <p className="font-semibold">{test.score}</p>
-                          <p className="text-xs text-muted-foreground">Difficulty {test.difficulty}/5</p>
+                          <p className="text-xs text-muted-foreground">Difficulty {test.difficulty}/3</p>
                         </div>
                       </div>
                     </div>

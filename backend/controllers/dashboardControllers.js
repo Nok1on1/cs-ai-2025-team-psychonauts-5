@@ -7,6 +7,8 @@ const recentTests = async (req, res) => {
         if (!token) return res.status(401).json({message: "No token"});
 
         const payload = jwt.verify(token, process.env.JWT_SECRET);
+        console.log("JWT payload:", payload);
+        console.log("Email from payload:", payload.email);
         const email = payload.email;
 
         const history = await UserHistory.find({email})

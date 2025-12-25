@@ -11,7 +11,6 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { mockDatabase } from "@/lib/mock-database"
 import type { Question } from "@/lib/mock-api"
-import { mockApi } from "@/lib/mock-api"
 import { FileText, ChevronLeft, ChevronRight, CheckCircle2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -26,6 +25,7 @@ export default function TestPage() {
   const [timeElapsed, setTimeElapsed] = useState(0)
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
+  const [testMetadata, setTestMetadata] = useState<{ subject: string; difficulty: number } | null>(null)
 
   useEffect(() => {
     // Load test data
@@ -36,6 +36,10 @@ export default function TestPage() {
     }
 
     setQuestions(test.questions)
+    setTestMetadata({
+      subject: test.subject,
+      difficulty: test.difficulty,
+    })
     setLoading(false)
 
     // Start timer
@@ -47,7 +51,7 @@ export default function TestPage() {
   }, [testId, router])
 
   const handleSelectAnswer = (answer: string) => {
-    console.log("[v0] Answer selected:", answer) // Added debug logging
+    console.log("[v0] Answer selected:", answer)
     setAnswers((prev) => ({
       ...prev,
       [currentQuestionIndex]: answer,
@@ -66,20 +70,78 @@ export default function TestPage() {
     }
   }
 
+  const calculateResults = () => {
+    let correct = 0
+    questions.forEach((question, index) => {
+      const userAnswer = answers[index]
+      if (userAnswer && userAnswer === question.correct_answer) {
+        correct++
+      }
+    })
+    return correct
+  }
+
   const handleSubmit = async () => {
+    if (!testMetadata) return
+
     setSubmitting(true)
 
-    const answerArray = questions.map((_, index) => ({
-      questionIndex: index,
-      userAnswer: answers[index] || "",
-    }))
-
     try {
-      const results = await mockApi.submitTest(testId, answerArray)
+      const correctAnswers = calculateResults()
+      const totalQuestions = questions.length
+
+      console.log("Submitting test:", {
+        subject: testMetadata.subject,
+        difficulty: testMetadata.difficulty,
+        correct: correctAnswers,
+        total_questions: totalQuestions,
+      })
+
+      const response = await fetch("http://localhost:8000/api/dashboard/insertTest", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          subject: testMetadata.subject,
+          difficulty: testMetadata.difficulty,
+          correct: correctAnswers,
+          total_questions: totalQuestions,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.message || "Failed to submit test")
+      }
+
+      const savedHistory = await response.json()
+      console.log("Test saved successfully:", savedHistory)
+
+      // Store results for the results page
+      const results = {
+        testId,
+        subject: testMetadata.subject,
+        difficulty: testMetadata.difficulty,
+        correct: correctAnswers,
+        total: totalQuestions,
+        scorePercent: savedHistory.scorePercent,
+        answers: questions.map((question, index) => ({
+          question: question.question,
+          userAnswer: answers[index] || "",
+          correctAnswer: question.correct_answer,
+          isCorrect: answers[index] === question.correct_answer,
+          options: question.options,
+          topic: question.topic,
+        })),
+      }
+
       localStorage.setItem(`test_results_${testId}`, JSON.stringify(results))
       router.push(`/test/${testId}/results`)
     } catch (error) {
       console.error("Failed to submit test:", error)
+      alert(error instanceof Error ? error.message : "Failed to submit test. Please try again.")
       setSubmitting(false)
     }
   }
