@@ -13,6 +13,8 @@ app.get('/', (req, res) => {
 
 app.use("/api/tests", require("./routes/quizRoutes"))
 
+app.use("/api/authorization", require("./routes/authorizationRoutes"))
+
 app.listen(port, () => {
     console.log(`Server listening at http://localhost:${port}`);
 });
