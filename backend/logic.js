@@ -192,7 +192,7 @@ function grade_test(submission) {
 }
 
 async function generate_socratic_feedback(req) {
-    const {question, selected_index} = req;
+    const {question, selected_index} = req.body;
     const socraticSystemInstruction = `
   You are a Socratic Tutor. Your goal is to help students discover answers themselves.
   
