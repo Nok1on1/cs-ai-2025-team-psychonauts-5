@@ -10,7 +10,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { mockApi } from "@/lib/mock-api"
 import { useAuthStore } from "@/lib/auth-store"
 import { Loader2 } from "lucide-react"
 
@@ -41,8 +40,34 @@ export default function SignupPage() {
     setLoading(true)
 
     try {
-      const response = await mockApi.signup(email, name, password)
-      setAuth(response.user, response.token)
+      const response = await fetch("http://localhost:8000/api/authorization/signUp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+        }),
+        credentials: "include",
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.message || "Signup failed")
+      }
+
+      const data = await response.json()
+      setAuth(
+        {
+          id: data.id,
+          email: data.email,
+          name: data.name,
+          role: "student",
+        },
+        data.accessToken
+      )
       router.push("/dashboard")
     } catch (err) {
       setError(err instanceof Error ? err.message : "Signup failed")
