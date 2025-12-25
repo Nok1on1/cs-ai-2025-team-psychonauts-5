@@ -9,34 +9,83 @@ import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
-import { mockDatabase } from "@/lib/mock-database"
-import type { Question } from "@/lib/mock-api"
-import { mockApi } from "@/lib/mock-api"
-import { FileText, ChevronLeft, ChevronRight, CheckCircle2 } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { FileText, ChevronLeft, ChevronRight, CheckCircle2, AlertCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
+
+const API_BASE_URL = "http://localhost:8000"
+
+interface Question {
+  id: string
+  text: string
+  choices: string[]
+  correct_index: number
+  subject: string
+  difficulty: number
+  topic?: string
+  explanation?: string
+  source_document?: string
+  source_page?: number
+}
+
+interface TestSession {
+  session_id: string
+  questions: Question[]
+  expires: number
+}
 
 export default function TestPage() {
   const router = useRouter()
   const params = useParams()
-  const testId = params?.id as string
+  const sessionId = params?.id as string
 
   const [questions, setQuestions] = useState<Question[]>([])
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
-  const [answers, setAnswers] = useState<Record<number, string>>({})
+  const [answers, setAnswers] = useState<Record<number, number>>({}) // Store as index (0-3)
   const [timeElapsed, setTimeElapsed] = useState(0)
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [testMetadata, setTestMetadata] = useState<{ subject: string; difficulty: number } | null>(null)
 
   useEffect(() => {
-    // Load test data
-    const test = mockDatabase.tests.find((t) => t.testId === testId)
-    if (!test) {
-      router.push("/dashboard")
-      return
+    // Load test data from sessionStorage
+    const loadTestData = () => {
+      try {
+        const storedData = sessionStorage.getItem(`test_${sessionId}`)
+        
+        if (!storedData) {
+          throw new Error("Test session not found. Please generate a new test.")
+        }
+
+        const testData = JSON.parse(storedData)
+        
+        if (!testData.questions || testData.questions.length === 0) {
+          throw new Error("No questions found in test session")
+        }
+
+        // Check if test has expired
+        if (testData.expires && Date.now() > testData.expires) {
+          throw new Error("This test session has expired. Please generate a new test.")
+        }
+
+        setQuestions(testData.questions)
+        
+        // Extract metadata
+        setTestMetadata({
+          subject: testData.subject,
+          difficulty: testData.difficulty,
+        })
+        
+        setLoading(false)
+      } catch (err) {
+        console.error("Error loading test:", err)
+        setError(err instanceof Error ? err.message : "Failed to load test")
+        setLoading(false)
+      }
     }
 
-    setQuestions(test.questions)
-    setLoading(false)
+    loadTestData()
 
     // Start timer
     const timer = setInterval(() => {
@@ -44,13 +93,13 @@ export default function TestPage() {
     }, 1000)
 
     return () => clearInterval(timer)
-  }, [testId, router])
+  }, [sessionId])
 
-  const handleSelectAnswer = (answer: string) => {
-    console.log("[v0] Answer selected:", answer) // Added debug logging
+  const handleSelectAnswer = (choiceIndex: string) => {
+    console.log("[v0] Answer selected:", choiceIndex)
     setAnswers((prev) => ({
       ...prev,
-      [currentQuestionIndex]: answer,
+      [currentQuestionIndex]: parseInt(choiceIndex),
     }))
   }
 
@@ -66,20 +115,146 @@ export default function TestPage() {
     }
   }
 
+  const calculateResults = () => {
+    let correct = 0
+    questions.forEach((question, index) => {
+      const userAnswer = answers[index]
+      if (userAnswer !== undefined && userAnswer === question.correct_index) {
+        correct++
+      }
+    })
+    return correct
+  }
+
   const handleSubmit = async () => {
+    if (!testMetadata) return
+
     setSubmitting(true)
 
-    const answerArray = questions.map((_, index) => ({
-      questionIndex: index,
-      userAnswer: answers[index] || "",
-    }))
-
     try {
-      const results = await mockApi.submitTest(testId, answerArray)
-      localStorage.setItem(`test_results_${testId}`, JSON.stringify(results))
-      router.push(`/test/${testId}/results`)
+      const correctAnswers = calculateResults()
+      const totalQuestions = questions.length
+
+      console.log("Submitting test:", {
+        subject: testMetadata.subject,
+        difficulty: testMetadata.difficulty,
+        correct: correctAnswers,
+        total_questions: totalQuestions,
+      })
+
+      const response = await fetch(`${API_BASE_URL}/api/dashboard/insertTest`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          subject: testMetadata.subject,
+          difficulty: testMetadata.difficulty,
+          correct: correctAnswers,
+          total_questions: totalQuestions,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.message || "Failed to submit test")
+      }
+
+      const savedHistory = await response.json()
+      console.log("Test saved successfully:", savedHistory)
+
+      // Generate Socratic feedback for incorrect answers
+      console.log("Generating Socratic feedback for incorrect answers...")
+      const resultsWithFeedback = await Promise.all(
+        questions.map(async (question, index) => {
+          const userAnswerIndex = answers[index]
+          const isCorrect = userAnswerIndex !== undefined && userAnswerIndex === question.correct_index
+          
+          let socraticFeedback = "Great job! You understood this concept well."
+          
+          // Generate Socratic feedback only for incorrect answers
+          if (!isCorrect && userAnswerIndex !== undefined) {
+            try {
+              console.log(`Generating feedback for question ${index + 1}:`, {
+                question_id: question.id,
+                selected_index: userAnswerIndex,
+              })
+
+              const feedbackResponse = await fetch(`${API_BASE_URL}/api/tests/feedback`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  question: {
+                    id: question.id,
+                    text: question.text,
+                    choices: question.choices,
+                    correct_index: question.correct_index,
+                    subject: question.subject,
+                    difficulty: question.difficulty,
+                  },
+                  selected_index: userAnswerIndex,
+                }),
+              })
+
+              console.log(`Feedback response status for question ${index + 1}:`, feedbackResponse.status)
+
+              if (feedbackResponse.ok) {
+                const feedbackData = await feedbackResponse.json()
+                console.log(`Feedback data for question ${index + 1}:`, feedbackData)
+                socraticFeedback = feedbackData.feedback || feedbackData.socratic_feedback || "Review the concept and try to understand why this answer is correct."
+              } else {
+                const errorText = await feedbackResponse.text()
+                console.error(`Failed to generate feedback for question ${index + 1}. Status: ${feedbackResponse.status}, Response:`, errorText)
+                socraticFeedback = "Review the concept and try to understand why this answer is correct."
+              }
+            } catch (error) {
+              console.error(`Error generating feedback for question ${index + 1}:`, error)
+              socraticFeedback = "Review the concept and try to understand why this answer is correct."
+            }
+          }
+
+          return {
+            questionIndex: index,
+            userAnswer: userAnswerIndex !== undefined ? question.choices[userAnswerIndex] : "",
+            correctAnswer: question.choices[question.correct_index],
+            correct: isCorrect,
+            socraticFeedback: socraticFeedback,
+            fullExplanation: question.explanation || "The correct answer demonstrates the key principle of this topic.",
+            source: {
+              document: question.source_document || "Curriculum materials",
+              page: question.source_page || 0,
+            },
+          }
+        })
+      )
+
+      console.log("All feedback generated, storing results...")
+
+
+      // Store results for the results page
+      const results = {
+        score: `${correctAnswers}/${totalQuestions}`,
+        accuracy: savedHistory.scorePercent,
+        results: resultsWithFeedback,
+        recommendations: {
+          nextDifficulty: savedHistory.scorePercent >= 80 ? testMetadata.difficulty + 1 : testMetadata.difficulty,
+          weakTopics: questions
+            .filter((q, i) => answers[i] === undefined || answers[i] !== q.correct_index)
+            .map(q => q.topic || testMetadata.subject)
+            .filter((topic, index, self) => self.indexOf(topic) === index)
+            .slice(0, 3),
+          studyMaterials: [],
+        },
+      }
+
+      localStorage.setItem(`test_results_${sessionId}`, JSON.stringify(results))
+      router.push(`/test/${sessionId}/results`)
     } catch (error) {
       console.error("Failed to submit test:", error)
+      alert(error instanceof Error ? error.message : "Failed to submit test. Please try again.")
       setSubmitting(false)
     }
   }
@@ -106,6 +281,26 @@ export default function TestPage() {
     )
   }
 
+  if (error) {
+    return (
+      <ProtectedRoute>
+        <div className="min-h-screen flex items-center justify-center p-4">
+          <Card className="max-w-md w-full">
+            <CardContent className="pt-6">
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+              <Button onClick={() => router.push("/dashboard")} className="w-full mt-4">
+                Return to Dashboard
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </ProtectedRoute>
+    )
+  }
+
   const currentQuestion = questions[currentQuestionIndex]
 
   return (
@@ -118,17 +313,20 @@ export default function TestPage() {
               <div className="flex items-center gap-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <Badge variant="secondary">{currentQuestion.topic}</Badge>
-                    {answers[currentQuestionIndex] && <CheckCircle2 className="h-4 w-4 text-green-600" />}
+                    <Badge variant="secondary">{currentQuestion.topic || currentQuestion.subject}</Badge>
+                    {answers[currentQuestionIndex] !== undefined && <CheckCircle2 className="h-4 w-4 text-green-600" />}
                   </div>
-                  <CardTitle className="text-xl leading-relaxed">{currentQuestion.question}</CardTitle>
+                  <CardTitle className="text-xl leading-relaxed">{currentQuestion.text}</CardTitle>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <FileText className="h-4 w-4" />
-                  <span className="text-xs">
-                    {currentQuestion.source_document}, p.{currentQuestion.source_page}
-                  </span>
-                </div>
+                {currentQuestion.source_document && (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <FileText className="h-4 w-4" />
+                    <span className="text-xs">
+                      {currentQuestion.source_document}
+                      {currentQuestion.source_page && `, p.${currentQuestion.source_page}`}
+                    </span>
+                  </div>
+                )}
               </div>
               <span className="text-sm font-medium">
                 {answeredCount}/{questions.length} answered
@@ -147,27 +345,45 @@ export default function TestPage() {
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                      <Badge variant="secondary">{currentQuestion.topic}</Badge>
-                      {answers[currentQuestionIndex] && <CheckCircle2 className="h-4 w-4 text-green-600" />}
+                      <Badge variant="secondary">{currentQuestion.topic || currentQuestion.subject}</Badge>
+                      {answers[currentQuestionIndex] !== undefined && <CheckCircle2 className="h-4 w-4 text-green-600" />}
                     </div>
-                    <CardTitle className="text-xl leading-relaxed">{currentQuestion.question}</CardTitle>
+                    <CardTitle className="text-xl leading-relaxed">{currentQuestion.text}</CardTitle>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <FileText className="h-4 w-4" />
-                    <span className="text-xs">
-                      {currentQuestion.source_document}, p.{currentQuestion.source_page}
-                    </span>
-                  </div>
+                  {currentQuestion.source_document && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <FileText className="h-4 w-4" />
+                      <span className="text-xs">
+                        {currentQuestion.source_document}
+                        {currentQuestion.source_page && `, p.${currentQuestion.source_page}`}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </CardHeader>
-              <CardContent>
-                <RadioGroup value={answers[currentQuestionIndex] || ""} onValueChange={handleSelectAnswer}>
+              <CardContent className="space-y-4">
+                {/* Context Section */}
+                {currentQuestion.context && (
+                  <Alert className="bg-accent/30 border-accent">
+                    <FileText className="h-4 w-4" />
+                    <AlertDescription>
+                      <p className="font-semibold text-sm mb-2">Context:</p>
+                      <p className="text-sm leading-relaxed whitespace-pre-wrap">{currentQuestion.context}</p>
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                {/* Answer Choices */}
+                <RadioGroup 
+                  value={answers[currentQuestionIndex]?.toString() || ""} 
+                  onValueChange={handleSelectAnswer}
+                >
                   <div className="space-y-3">
-                    {currentQuestion.options.map((option, index) => {
+                    {currentQuestion.choices.map((choice, index) => {
                       const optionLetter = String.fromCharCode(65 + index) // A, B, C, D
                       return (
                         <div key={index} className="relative">
-                          <RadioGroupItem value={optionLetter} id={`option-${index}`} className="peer sr-only" />
+                          <RadioGroupItem value={index.toString()} id={`option-${index}`} className="peer sr-only" />
                           <Label
                             htmlFor={`option-${index}`}
                             className={cn(
@@ -178,7 +394,7 @@ export default function TestPage() {
                             <div className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-muted-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-primary-foreground shrink-0 mt-0.5">
                               <span className="text-sm font-medium">{optionLetter}</span>
                             </div>
-                            <span className="flex-1 leading-relaxed">{option}</span>
+                            <span className="flex-1 leading-relaxed">{choice}</span>
                           </Label>
                         </div>
                       )
@@ -226,7 +442,7 @@ export default function TestPage() {
                         "h-10 w-10 rounded-lg border-2 font-medium text-sm transition-all",
                         currentQuestionIndex === index
                           ? "border-primary bg-primary text-primary-foreground"
-                          : answers[index]
+                          : answers[index] !== undefined
                             ? "border-green-600 bg-green-50 text-green-700"
                             : "border-muted hover:border-muted-foreground",
                       )}

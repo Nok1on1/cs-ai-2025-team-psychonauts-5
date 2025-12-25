@@ -1,8 +1,9 @@
 const {GoogleGenerativeAI} = require('@google/generative-ai');
 const crypto = require('crypto');
-const questionsSchema = require("./schemas/questionsSchema.json");
-const {Document} = require("./mongoSchemas/document");
-const {Chunk} = require("./mongoSchemas/chunk");
+const georgianSchema = require("./schemas/georgianQuizSchema.json");
+const mathSchema = require("./schemas/mathQuizSchema.json");
+const Document = require("./mongoSchemas/document");
+const Chunk = require("./mongoSchemas/chunk");
 
 require('dotenv').config();
 
@@ -71,54 +72,58 @@ async function _gemini_generate_questions(req) {
     }
 
     try {
+        var responseSchema;
+        switch (req.subject) {
+            case "Georgian": {
+                responseSchema = georgianSchema;
+                break;
+            }
+            case "Math":
+                responseSchema = mathSchema;
+                break;
+        }
+
         const genAI = new GoogleGenerativeAI(apiKey);
         const jsonOnlyModel = genAI.getGenerativeModel({
             model: "gemini-2.5-flash",
             generationConfig: {
                 responseMimeType: "application/json",
-                responseSchema: questionsSchema
+                responseSchema: responseSchema
             }
         });
 
         const instructions = `
-      Create strictly-formatted JSON for multiple-choice questions.
-      Return ONLY JSON, no prose.
-
-      Schema for each question object: {
-        "id": "string",
-        "text": "string",
-        "choices": ["string"],
-        "correct_index": "integer",
-        "subject": "math" | "logic",
-        "difficulty": 1 | 2 | 3
-      }
-
       Requirements:
       - subject must be '${req.subject}'.
       - difficulty should be ${req.difficulty}.
       - Generate exactly ${req.num_questions} questions.
       - Ensure correct_index points to the correct choice.
-
-      Output shape: { "questions": [ {question}, ... ] }
+      - If the subject is georgian, questions should be georgian too.
+      - if context is needed for the following questions give them and say it's context, for each context base question.
     `;
 
-        const doc = await Document.findOne({subject: req.subject});
+        const [doc] = await Document.aggregate([
+            {$match: {subject: req.subject}},
+            {$sample: {size: 1}}
+        ]);
+        let chunkText = "";
 
-        const total = await Chunk.countDocuments({document_id: doc._id});
+        if (doc) {
+            const total = await Chunk.countDocuments({document_id: doc._id});
 
-        const windowSize = 100;
-        const maxStart = Math.max(0, total - windowSize);
-        const startIndex = Math.floor(Math.random() * maxStart);
+            const windowSize = 40;
+            const maxStart = Math.max(0, total - windowSize);
+            const startIndex = Math.floor(Math.random() * maxStart);
 
-        const chunks = await Chunk.find({document_id: doc._id, subject: req.subject})
-            .sort({chunk_index: 1})
-            .skip(startIndex)
-            .limit(windowSize);
+            const chunks = await Chunk.find({document_id: doc._id, subject: req.subject})
+                .sort({chunk_index: 1})
+                .skip(startIndex)
+                .limit(windowSize);
 
-        const chunkText = chunks.map((chunk, i) => "chunk " + i + " " + chunk.text)
+            chunkText = chunks.map((chunk, i) => `chunk ${i} ${chunk.text}`).join(" ");
+        }
 
-
-        const result = await jsonOnlyModel.generateContent(instructions + chunkText.toString());
+        const result = await jsonOnlyModel.generateContent(instructions + chunkText);
         const response = await result.response;
         const text = response.text();
         const data = JSON.parse(text);
@@ -180,14 +185,14 @@ function grade_test(submission) {
 
     return {
         session_id: session_id,
-        total: session.questions.length,
+        total_questions: session.questions.length,
         correct: correct_count,
         details: details,
     };
 }
 
 async function generate_socratic_feedback(req) {
-    const {question, selected_index} = req;
+    const {question, selected_index} = req.body;
     const socraticSystemInstruction = `
   You are a Socratic Tutor. Your goal is to help students discover answers themselves.
   

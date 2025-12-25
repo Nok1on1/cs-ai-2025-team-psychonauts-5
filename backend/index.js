@@ -1,16 +1,20 @@
+require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const connectDb = require('./config/dbConnection');
+const cookieParser = require("cookie-parser");
 
 
 const app = express();
 const port = 8000;
 
 app.use(cors({
-  origin: 'http://localhost:3000',
-  credentials: true
+    origin: 'http://localhost:3000',
+    credentials: true
 }));
 app.use(express.json());
+app.use(cookieParser());
 
 connectDb();
 
@@ -23,6 +27,8 @@ app.use("/api/tests", require("./routes/quizRoutes"))
 app.use("/api/authorization", require("./routes/authorizationRoutes"))
 
 app.use("/api/documents", require("./routes/documentRoutes"))
+
+app.use("/api/dashboard", require("./routes/dashboardRoutes"))
 
 app.listen(port, () => {
     console.log(`Server listening at http://localhost:${port}`);
