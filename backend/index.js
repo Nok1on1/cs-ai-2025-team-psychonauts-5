@@ -1,11 +1,15 @@
 const express = require('express');
 const cors = require('cors');
+const connectDb = require('./config/dbConnection');
+
 
 const app = express();
 const port = 8000;
 
 app.use(cors());
 app.use(express.json());
+
+connectDb();
 
 app.get('/', (req, res) => {
     res.send('Dialogos Backend is running!');

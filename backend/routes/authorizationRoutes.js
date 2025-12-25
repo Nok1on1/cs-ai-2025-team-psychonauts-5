@@ -1,4 +1,3 @@
-const {route} = require("express/lib/application");
 const checkDuplicate = require("../middleware/verifyAuthorization");
 const {signUp, signIn} = require("../controllers/authorizationControllers");
 const router = require("express").Router()

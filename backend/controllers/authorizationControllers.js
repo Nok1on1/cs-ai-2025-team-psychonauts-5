@@ -1,7 +1,8 @@
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
-var {config} = require("../config/auth.config");
+var config = require("../config/auth.config");
 const User = require("../mongoSchemas/user");
+require('dotenv').config();
 
 const signUp = async (req, res) => {
     const {name, email, password} = req.body;
@@ -22,7 +23,7 @@ const signUp = async (req, res) => {
             .json({message: "Something went wrong in signUp", err: error});
     }
 
-    let token = jwt.sign({id: foundUser._id}, config.secret, {
+    let token = jwt.sign({id: user._id}, config.secret, {
         expiresIn: config.jwtExpiration,
     });
 
@@ -54,10 +55,6 @@ const signIn = async (req, res) => {
 
     let token = jwt.sign({id: foundUser._id}, config.secret, {
         expiresIn: config.jwtExpiration,
-    });
-
-    let newRefreshToken = jwt.sign({id: foundUser._id}, config.secret, {
-        expiresIn: config.jwtRefreshExpiration,
     });
 
     let authority = "ROLE_" + foundUser.role;
