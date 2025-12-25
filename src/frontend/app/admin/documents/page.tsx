@@ -12,21 +12,22 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { mockApi } from "@/lib/mock-api"
 import { Upload, FileText, CheckCircle2, Loader2, Calendar, Database } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { useAuthStore } from "@/lib/auth-store"
 
 interface Document {
-  id: string
+  _id: string
   filename: string
   subject: string
   topic: string
-  chunks: number
+  total_chunks: number
   upload_date: string
 }
 
 export default function AdminDocumentsPage() {
   const { toast } = useToast()
+  const token = useAuthStore((state) => state.token)
   const [documents, setDocuments] = useState<Document[]>([])
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
@@ -35,19 +36,41 @@ export default function AdminDocumentsPage() {
   const [file, setFile] = useState<File | null>(null)
   const [subject, setSubject] = useState<string>("Math")
   const [topic, setTopic] = useState<string>("")
-  const [gradeLevel, setGradeLevel] = useState<string>("12")
   const [source, setSource] = useState<string>("Ministry of Education")
 
   useEffect(() => {
-    fetchDocuments()
-  }, [])
+    if (token) {
+      fetchDocuments()
+    }
+  }, [token])
 
   const fetchDocuments = async () => {
     try {
-      const response = await mockApi.getDocuments()
-      setDocuments(response.documents)
+      const response = await fetch("http://localhost:8000/api/documents", {
+        method: "GET",
+        headers: {
+          "x-access-token": token || "",
+        },
+        credentials: "include",
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch documents")
+      }
+
+      const data = await response.json()
+      console.log("Documents response:", data)
+      
+      // Handle both array and object responses
+      const docs = Array.isArray(data) ? data : data.documents || []
+      setDocuments(docs)
     } catch (error) {
       console.error("Failed to fetch documents:", error)
+      toast({
+        title: "Error",
+        description: "Failed to load documents",
+        variant: "destructive",
+      })
     } finally {
       setLoading(false)
     }
@@ -72,16 +95,31 @@ export default function AdminDocumentsPage() {
     setUploading(true)
 
     try {
-      const response = await mockApi.uploadDocument(file, {
-        subject,
-        topic,
-        grade_level: Number.parseInt(gradeLevel),
-        source,
+      const formData = new FormData()
+      formData.append("file", file)
+      formData.append("subject", subject)
+      formData.append("topic", topic)
+      formData.append("source", source)
+
+      const response = await fetch("http://localhost:8000/api/documents/upload", {
+        method: "POST",
+        headers: {
+          "x-access-token": token || "",
+        },
+        body: formData,
+        credentials: "include",
       })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.message || "Upload failed")
+      }
+
+      const data = await response.json()
 
       toast({
         title: "Success!",
-        description: `${response.filename} uploaded with ${response.chunksCreated} chunks created`,
+        description: `${data.filename} uploaded successfully`,
       })
 
       // Reset form
@@ -173,22 +211,6 @@ export default function AdminDocumentsPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="grade-level">Grade Level</Label>
-                  <Select value={gradeLevel} onValueChange={setGradeLevel}>
-                    <SelectTrigger id="grade-level">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Array.from({ length: 12 }, (_, i) => i + 1).map((grade) => (
-                        <SelectItem key={grade} value={String(grade)}>
-                          Grade {grade}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
                   <Label htmlFor="source">Source</Label>
                   <Input
                     id="source"
@@ -248,7 +270,7 @@ export default function AdminDocumentsPage() {
                 <div className="space-y-3">
                   {documents.map((doc) => (
                     <div
-                      key={doc.id}
+                      key={doc._id}
                       className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors gap-3"
                     >
                       <div className="flex items-start gap-3 flex-1 min-w-0">
@@ -267,11 +289,11 @@ export default function AdminDocumentsPage() {
                       <div className="flex items-center gap-4 text-sm text-muted-foreground sm:pl-4">
                         <div className="flex items-center gap-1">
                           <Database className="h-4 w-4" />
-                          <span>{doc.chunks} chunks</span>
+                          <span>{doc.total_chunks} chunks</span>
                         </div>
                         <div className="flex items-center gap-1">
                           <Calendar className="h-4 w-4" />
-                          <span>{doc.upload_date}</span>
+                          <span>{new Date(doc.upload_date).toLocaleDateString()}</span>
                         </div>
                       </div>
                     </div>

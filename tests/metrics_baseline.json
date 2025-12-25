@@ -1,0 +1,30 @@
+{
+  "baseline_metrics": {
+    "date": "2025-12-01",
+    "total_tests": 50,
+    "distribution": {
+      "easy": 20,
+      "medium": 20,
+      "hard": 10
+    },
+    "subjects": {
+      "Math": 20,
+      "English": 15,
+      "Georgian": 10,
+      "Science": 5
+    },
+    "performance": {
+      "accuracy": 84.0,
+      "avg_latency": 2.3,
+      "avg_cost_per_query": 0.002,
+      "error_rate": 3.2
+    },
+    "thresholds": {
+      "accuracy": 80.0,
+      "latency": 3.0,
+      "cost_per_query": 0.003,
+      "error_rate": 5.0
+    },
+    "notes": "Baseline established from initial 50 test queries. Math questions perform best (92% accuracy). Georgian questions need improvement (72% accuracy)."
+  }
+}

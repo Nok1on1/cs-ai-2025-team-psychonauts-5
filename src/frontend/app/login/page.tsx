@@ -45,12 +45,14 @@ export default function LoginPage() {
       }
 
       const data = await response.json()
+      // Strip "ROLE_" prefix from role if present
+      const role = data.role.replace(/^ROLE_/, '').toLowerCase() as "admin" | "student"
       setAuth(
         {
           id: data.id,
           email: data.email,
           name: data.name,
-          role: data.role,
+          role: role,
         },
         data.accessToken
       )
