@@ -4,7 +4,7 @@ const documentSchema = new mongoose.Schema({
     filename: String,
     subject: String, // "Math", "English", "Georgian"
     topic: String,
-    source: String, // "Ministry of Education", etc.
+    source: String, 
     file_path: String,
     total_chunks: Number,
     upload_date: {

@@ -9,7 +9,10 @@ const storage = multer.diskStorage({
         cb(null, 'uploads/');
     },
     filename: (req, file, cb) => {
-        cb(null, Date.now() + '-' + file.originalname);
+        // Just use timestamp, let controller handle proper naming
+        const timestamp = Date.now();
+        const ext = path.extname(file.originalname).toLowerCase();
+        cb(null, `${timestamp}${ext}`);
     }
 });
 
@@ -17,7 +20,8 @@ const upload = multer({
     storage,
     fileFilter: (req, file, cb) => {
         // Only allow PDF files
-        if (path.extname(file.originalname).toLowerCase() === '.pdf') {
+        const ext = path.extname(file.originalname).toLowerCase();
+        if (ext === '.pdf') {
             cb(null, true);
         } else {
             cb(new Error('Only PDF files are allowed'), false);
