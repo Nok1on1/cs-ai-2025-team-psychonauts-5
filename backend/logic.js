@@ -1,6 +1,9 @@
 const {GoogleGenerativeAI} = require('@google/generative-ai');
 const crypto = require('crypto');
 const questionsSchema = require("./schemas/questionsSchema.json");
+const {Document} = require("./mongoSchemas/document");
+const {Chunk} = require("./mongoSchemas/chunk");
+
 require('dotenv').config();
 
 const _SESSIONS = new Map();
@@ -99,7 +102,23 @@ async function _gemini_generate_questions(req) {
       Output shape: { "questions": [ {question}, ... ] }
     `;
 
-        const result = await jsonOnlyModel.generateContent(instructions);
+        const doc = await Document.findOne({subject: req.subject});
+
+        const total = await Chunk.countDocuments({document_id: doc._id});
+
+        const windowSize = 100;
+        const maxStart = Math.max(0, total - windowSize);
+        const startIndex = Math.floor(Math.random() * maxStart);
+
+        const chunks = await Chunk.find({document_id: doc._id, subject: req.subject})
+            .sort({chunk_index: 1})
+            .skip(startIndex)
+            .limit(windowSize);
+
+        const chunkText = chunks.map((chunk, i) => "chunk " + i + " " + chunk.text)
+
+
+        const result = await jsonOnlyModel.generateContent(instructions + chunkText.toString());
         const response = await result.response;
         const text = response.text();
         const data = JSON.parse(text);
