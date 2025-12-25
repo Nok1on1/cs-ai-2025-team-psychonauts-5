@@ -22,6 +22,8 @@ app.use("/api/tests", require("./routes/quizRoutes"))
 
 app.use("/api/authorization", require("./routes/authorizationRoutes"))
 
+app.use("/api/documents", require("./routes/documentRoutes"))
+
 app.listen(port, () => {
     console.log(`Server listening at http://localhost:${port}`);
 });
