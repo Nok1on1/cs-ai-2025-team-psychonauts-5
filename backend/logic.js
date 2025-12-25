@@ -1,8 +1,8 @@
 const {GoogleGenerativeAI} = require('@google/generative-ai');
 const crypto = require('crypto');
 const questionsSchema = require("./schemas/questionsSchema.json");
-const {Document} = require("./mongoSchemas/document");
-const {Chunk} = require("./mongoSchemas/chunk");
+const Document = require("./mongoSchemas/document");
+const Chunk = require("./mongoSchemas/chunk");
 
 require('dotenv').config();
 
@@ -180,7 +180,7 @@ function grade_test(submission) {
 
     return {
         session_id: session_id,
-        total: session.questions.length,
+        total_questions: session.questions.length,
         correct: correct_count,
         details: details,
     };
