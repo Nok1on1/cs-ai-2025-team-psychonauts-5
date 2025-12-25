@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const pdfParse = require('pdf-parse');
 const Document = require('../mongoSchemas/document');
 const Chunk = require('../mongoSchemas/chunk');
 
@@ -34,9 +35,18 @@ const uploadDocument = async (req, res) => {
             fullText = content;
             filename = `${topic.replace(/\s+/g, '_')}_${Date.now()}.txt`;
         } else if (req.file) {
-            // If file is provided, read as text (supports .txt, .md, etc.)
-            fullText = fs.readFileSync(req.file.path, 'utf-8');
-            filename = req.file.originalname;
+            // If file is provided, parse PDF or read as text
+            if (req.file.mimetype === 'application/pdf' || path.extname(req.file.originalname).toLowerCase() === '.pdf') {
+                // Parse PDF file
+                const pdfData = await pdfParse(fs.readFileSync(req.file.path));
+                fullText = pdfData.text;
+            } else {
+                // Read as plain text
+                fullText = fs.readFileSync(req.file.path, 'utf-8');
+            }
+            // Generate clean filename from topic (which is sent from frontend as form data)
+            // This ensures consistency and avoids encoding issues from the uploaded filename
+            filename = `${subject}_${topic.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
         } else {
             return res.status(400).json({ message: "Either file or content text is required" });
         }
