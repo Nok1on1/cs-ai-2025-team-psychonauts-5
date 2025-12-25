@@ -1,4 +1,6 @@
 const User = require("../mongoSchemas/user");
+const jwt = require("jsonwebtoken");
+const config = require("../config/auth.config");
 
 const checkDuplicate = async (req, res, next) => {
     try {
@@ -18,4 +20,21 @@ const checkDuplicate = async (req, res, next) => {
     }
 };
 
-module.exports = checkDuplicate;
+const authMiddleware = async (req, res, next) => {
+    const token = req.cookies["x-access-token"];
+    if (!token) return res.status(401).json({message: "No token"});
+
+    try {
+        const payload = jwt.verify(token, config.secret);
+        const user = await User.findById(payload.id);
+        if (!user) return res.status(404).json({message: "User not found"});
+
+        req.user = user;
+        next();
+    } catch (err) {
+        return res.status(401).json({message: "Invalid or expired token"});
+    }
+};
+
+
+module.exports = {checkDuplicate, authMiddleware};
