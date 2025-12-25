@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Upload, FileText, CheckCircle2, Loader2, Calendar, Database } from "lucide-react"
+import { Upload, FileText, CheckCircle2, Loader2, Calendar, Database, X } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useAuthStore } from "@/lib/auth-store"
 
@@ -31,6 +31,7 @@ export default function AdminDocumentsPage() {
   const [documents, setDocuments] = useState<Document[]>([])
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   // Upload form state
   const [file, setFile] = useState<File | null>(null)
@@ -138,6 +139,42 @@ export default function AdminDocumentsPage() {
       })
     } finally {
       setUploading(false)
+    }
+  }
+
+  const handleDelete = async (doc: Document) => {
+    if (!window.confirm(`Are you sure you want to delete "${doc.filename}"? This action cannot be undone.`)) {
+      return
+    }
+
+    setDeletingId(doc._id)
+
+    try {
+      const response = await fetch(`http://localhost:8000/api/documents/${doc._id}`, {
+        method: "DELETE",
+        headers: {
+          "x-access-token": token || "",
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to delete document")
+      }
+
+      toast({
+        title: "Deleted",
+        description: "Document deleted successfully",
+      })
+
+      setDocuments((prev) => prev.filter((d) => d._id !== doc._id))
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete document",
+        variant: "destructive",
+      })
+    } finally {
+      setDeletingId(null)
     }
   }
 
@@ -287,6 +324,19 @@ export default function AdminDocumentsPage() {
                       </div>
 
                       <div className="flex items-center gap-4 text-sm text-muted-foreground sm:pl-4">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                          onClick={() => handleDelete(doc)}
+                          disabled={deletingId === doc._id}
+                        >
+                          {deletingId === doc._id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <X className="h-4 w-4" />
+                          )}
+                        </Button>
                         <div className="flex items-center gap-1">
                           <Database className="h-4 w-4" />
                           <span>{doc.total_chunks} chunks</span>
