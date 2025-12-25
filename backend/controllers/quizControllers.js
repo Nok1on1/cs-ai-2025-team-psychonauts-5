@@ -24,7 +24,7 @@ const getGrade = async (req, res) => {
 
 const generateSocraticFeedback = async (req, res) => {
     try {
-        const feedback = await generate_socratic_feedback(req.body);
+        const feedback = await generate_socratic_feedback(req);
         res.json(feedback);
     } catch (error) {
         res.status(400).json({error: error.message});
