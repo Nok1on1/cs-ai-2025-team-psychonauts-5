@@ -204,7 +204,7 @@ export default function TestPage() {
               if (feedbackResponse.ok) {
                 const feedbackData = await feedbackResponse.json()
                 console.log(`Feedback data for question ${index + 1}:`, feedbackData)
-                socraticFeedback = feedbackData.feedback || feedbackData.socratic_feedback || "Review the concept and try to understand why this answer is correct."
+                socraticFeedback = feedbackData || feedbackData.socratic_feedback || "Review the concept and try to understand why this answer is correct."
               } else {
                 const errorText = await feedbackResponse.text()
                 console.error(`Failed to generate feedback for question ${index + 1}. Status: ${feedbackResponse.status}, Response:`, errorText)
